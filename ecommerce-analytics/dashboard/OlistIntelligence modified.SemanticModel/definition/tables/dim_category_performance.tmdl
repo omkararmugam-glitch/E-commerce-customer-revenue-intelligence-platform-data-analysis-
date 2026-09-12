@@ -1,0 +1,124 @@
+table dim_category_performance
+	lineageTag: 207a789f-4888-494a-8aa3-3c0062bc3d3c
+
+	/// Jun-Aug 2018 vs Mar-May 2018 revenue change. Seasonality not separable.
+	measure 'Category Momentum' = SUM ( dim_category_performance[momentum_change_brl] )
+		formatString: "R$"#,0
+		displayFolder: Category
+		lineageTag: 376867cc-5fa4-4ebe-b97e-1c561ae35f9f
+
+	measure 'Category Units' = SUM ( dim_category_performance[units] )
+		formatString: #,0
+		displayFolder: Category
+		lineageTag: 065ed2cb-7c6d-4b08-ab80-1227feef2a14
+
+	measure 'Category Avg Price' = AVERAGE ( dim_category_performance[avg_item_price] )
+		formatString: "R$"#,0.00
+		displayFolder: Category
+		lineageTag: d0f6d6a7-67c2-4b0b-a5f0-3a3a1abd4deb
+
+	column category
+		dataType: string
+		lineageTag: 69622a2b-7f80-41bc-8e40-3be729ac2dd3
+		summarizeBy: none
+		sourceColumn: category
+
+	column revenue
+		dataType: double
+		lineageTag: 22759d35-c23b-4c6c-a7fe-bd6eb559508d
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column units
+		dataType: int64
+		lineageTag: 7e28017d-df63-4555-b856-232bb22c8c23
+		summarizeBy: sum
+		sourceColumn: units
+
+	column orders
+		dataType: int64
+		lineageTag: 4ed3d300-53ba-4b9c-a33d-647aa032060a
+		summarizeBy: sum
+		sourceColumn: orders
+
+	column products
+		dataType: int64
+		lineageTag: 5d3de7ae-7bc2-461f-88cf-cc520e69976a
+		summarizeBy: sum
+		sourceColumn: products
+
+	column avg_item_price
+		dataType: double
+		lineageTag: 156baded-69be-4e32-b6f7-13b8240026e6
+		summarizeBy: none
+		sourceColumn: avg_item_price
+
+	column median_price
+		dataType: double
+		lineageTag: 5cf2d5d9-57c2-4336-98d8-0318d283c000
+		summarizeBy: none
+		sourceColumn: median_price
+
+	column freight
+		dataType: double
+		lineageTag: f5144a2d-d070-4267-8f47-d3fefa1089b6
+		summarizeBy: sum
+		sourceColumn: freight
+
+	column pct_of_revenue
+		dataType: double
+		lineageTag: 0b65e57a-54a3-4ca4-8835-bc25484c573e
+		summarizeBy: none
+		sourceColumn: pct_of_revenue
+
+	column cumulative_pct_of_revenue
+		dataType: double
+		lineageTag: 2ca94957-6a8a-4a1a-abbb-8abaecd62b54
+		summarizeBy: none
+		sourceColumn: cumulative_pct_of_revenue
+
+	column freight_pct_of_revenue
+		dataType: double
+		lineageTag: 21e7e9dd-e843-4d41-8e57-2bd81200624e
+		summarizeBy: none
+		sourceColumn: freight_pct_of_revenue
+
+	column quadrant
+		dataType: string
+		lineageTag: e7080820-7319-47a7-aa72-ae0625291668
+		summarizeBy: none
+		sourceColumn: quadrant
+
+	column revenue_mar_may_2018
+		dataType: double
+		lineageTag: f9d7bdbe-5ab6-4926-9c38-eefa028292c7
+		summarizeBy: none
+		sourceColumn: revenue_mar_may_2018
+
+	column revenue_jun_aug_2018
+		dataType: double
+		lineageTag: 5c5be8a3-c034-4554-8a8d-865d07e96f15
+		summarizeBy: none
+		sourceColumn: revenue_jun_aug_2018
+
+	column momentum_change_brl
+		dataType: double
+		lineageTag: 833392fd-63c5-4c42-87b7-4dfc231716d3
+		summarizeBy: none
+		sourceColumn: momentum_change_brl
+
+	column momentum_change_pct
+		dataType: double
+		lineageTag: 5e9ff872-8099-471a-9586-e406985f6418
+		summarizeBy: none
+		sourceColumn: momentum_change_pct
+
+	partition dim_category_performance = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_category_performance.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"category", type text}, {"revenue", type number}, {"units", Int64.Type}, {"orders", Int64.Type}, {"products", Int64.Type}, {"avg_item_price", type number}, {"median_price", type number}, {"freight", type number}, {"pct_of_revenue", type number}, {"cumulative_pct_of_revenue", type number}, {"freight_pct_of_revenue", type number}, {"quadrant", type text}, {"revenue_mar_may_2018", type number}, {"revenue_jun_aug_2018", type number}, {"momentum_change_brl", type number}, {"momentum_change_pct", type number}})
+				in
+				    Typed
+

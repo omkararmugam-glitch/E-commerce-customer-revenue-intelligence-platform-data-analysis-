@@ -1,0 +1,120 @@
+table fact_order_items
+	lineageTag: 0babf70d-ef69-41a6-a5f4-de8cecb170bc
+
+	/// Revenue at line level. Use for product, category and seller visuals.
+	measure 'Item Revenue' = SUM ( fact_order_items[revenue] )
+		formatString: "R$"#,0
+		displayFolder: Revenue
+		lineageTag: ce9a63dc-7553-425a-a9ff-2b46df39d71a
+
+	measure 'Items Sold' = COUNTROWS ( fact_order_items )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: ca411914-624c-43c9-801e-5b6979f0c108
+
+	measure 'Products Sold' = DISTINCTCOUNT ( fact_order_items[product_id] )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: e75267b8-fd08-4d33-8024-26751c071a41
+
+	measure 'Avg Item Price' = DIVIDE ( [Item Revenue], [Items Sold] )
+		formatString: "R$"#,0.00
+		displayFolder: Order Value
+		lineageTag: c7d6a404-9278-4f0a-8fa7-af1e3e3767dd
+
+	column order_id
+		dataType: string
+		lineageTag: f1b34374-44d6-4893-8573-7bc4342e9ee5
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column order_item_id
+		dataType: int64
+		lineageTag: 9a341235-ef94-4ce8-8e1b-35bbcf0b8847
+		summarizeBy: none
+		sourceColumn: order_item_id
+
+	column product_id
+		dataType: string
+		lineageTag: bb806119-92cf-4702-8bf7-fa9046e70300
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column seller_id
+		dataType: string
+		lineageTag: 33b080a8-719e-4049-b0aa-4e410cba66ff
+		summarizeBy: none
+		sourceColumn: seller_id
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: ac872d75-f093-4a7e-8c84-6f0a102f5b86
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: de1036c5-162f-49fc-9358-2195a0c6f9f1
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_month
+		dataType: string
+		lineageTag: 7e3f29a2-caed-4a31-8178-91c7251a4842
+		summarizeBy: none
+		sourceColumn: order_month
+
+	column order_quarter
+		dataType: string
+		lineageTag: 8db3a503-83b0-44a0-8cb3-0237acb05d65
+		summarizeBy: none
+		sourceColumn: order_quarter
+
+	column category
+		dataType: string
+		lineageTag: 1fd081da-f6d5-47db-83f0-3c648c1353bb
+		summarizeBy: none
+		sourceColumn: category
+
+	column revenue
+		dataType: double
+		lineageTag: df0271ce-c51d-4852-a84a-2c1d76dc9c34
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column freight
+		dataType: double
+		lineageTag: c85e2a0a-ad6c-4afb-8e7b-65b5d16aed4a
+		summarizeBy: sum
+		sourceColumn: freight
+
+	column customer_state
+		dataType: string
+		lineageTag: fcbec637-d29e-4498-9d0d-abcfd5d98899
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column seller_state
+		dataType: string
+		lineageTag: 1cc1147d-e539-4bfd-aa22-6ee0ea0f8410
+		summarizeBy: none
+		sourceColumn: seller_state
+
+	column same_state_delivery
+		dataType: boolean
+		lineageTag: 1980502d-fd49-4898-9e1b-c9c92808d6a6
+		summarizeBy: none
+		sourceColumn: same_state_delivery
+
+	partition fact_order_items = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "fact_order_items.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"order_id", type text}, {"order_item_id", Int64.Type}, {"product_id", type text}, {"seller_id", type text}, {"customer_unique_id", type text}, {"order_date", type date}, {"order_month", type text}, {"order_quarter", type text}, {"category", type text}, {"revenue", type number}, {"freight", type number}, {"customer_state", type text}, {"seller_state", type text}, {"same_state_delivery", type logical}})
+				in
+				    Typed
+

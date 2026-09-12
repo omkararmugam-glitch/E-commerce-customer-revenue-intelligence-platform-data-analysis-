@@ -1,0 +1,1632 @@
+{
+  "name": "OlistIntelligence",
+  "compatibilityLevel": 1550,
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "tables": [
+      {
+        "name": "fact_orders",
+        "columns": [
+          {
+            "name": "order_id",
+            "dataType": "string",
+            "sourceColumn": "order_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "customer_unique_id",
+            "dataType": "string",
+            "sourceColumn": "customer_unique_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_date",
+            "dataType": "dateTime",
+            "sourceColumn": "order_date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd"
+          },
+          {
+            "name": "order_timestamp",
+            "dataType": "dateTime",
+            "sourceColumn": "order_timestamp",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd hh:nn"
+          },
+          {
+            "name": "order_year",
+            "dataType": "int64",
+            "sourceColumn": "order_year",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_month",
+            "dataType": "string",
+            "sourceColumn": "order_month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_quarter",
+            "dataType": "string",
+            "sourceColumn": "order_quarter",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_weekday",
+            "dataType": "string",
+            "sourceColumn": "order_weekday",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_hour",
+            "dataType": "int64",
+            "sourceColumn": "order_hour",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "freight",
+            "dataType": "double",
+            "sourceColumn": "freight",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "items_in_order",
+            "dataType": "int64",
+            "sourceColumn": "items_in_order",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "distinct_products",
+            "dataType": "int64",
+            "sourceColumn": "distinct_products",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "distinct_sellers",
+            "dataType": "int64",
+            "sourceColumn": "distinct_sellers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_item_price",
+            "dataType": "double",
+            "sourceColumn": "avg_item_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "is_multi_item",
+            "dataType": "boolean",
+            "sourceColumn": "is_multi_item",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "payment_type",
+            "dataType": "string",
+            "sourceColumn": "payment_type",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "max_installments",
+            "dataType": "double",
+            "sourceColumn": "max_installments",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "review_score",
+            "dataType": "double",
+            "sourceColumn": "review_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "delivery_days",
+            "dataType": "double",
+            "sourceColumn": "delivery_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "estimated_days",
+            "dataType": "double",
+            "sourceColumn": "estimated_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "delivery_vs_estimate_days",
+            "dataType": "double",
+            "sourceColumn": "delivery_vs_estimate_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "is_late",
+            "dataType": "boolean",
+            "sourceColumn": "is_late",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "customer_state",
+            "dataType": "string",
+            "sourceColumn": "customer_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "customer_city",
+            "dataType": "string",
+            "sourceColumn": "customer_city",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "is_truncated_period",
+            "dataType": "boolean",
+            "sourceColumn": "is_truncated_period",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "fact_orders",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"fact_orders.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"order_id\", type text}, {\"customer_unique_id\", type text}, {\"order_date\", type date}, {\"order_timestamp\", type datetime}, {\"order_year\", Int64.Type}, {\"order_month\", type text}, {\"order_quarter\", type text}, {\"order_weekday\", type text}, {\"order_hour\", Int64.Type}, {\"revenue\", type number}, {\"freight\", type number}, {\"items_in_order\", Int64.Type}, {\"distinct_products\", Int64.Type}, {\"distinct_sellers\", Int64.Type}, {\"avg_item_price\", type number}, {\"is_multi_item\", type logical}, {\"payment_type\", type text}, {\"max_installments\", type number}, {\"review_score\", type number}, {\"delivery_days\", type number}, {\"estimated_days\", type number}, {\"delivery_vs_estimate_days\", type number}, {\"is_late\", type logical}, {\"customer_state\", type text}, {\"customer_city\", type text}, {\"is_truncated_period\", type logical}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total Revenue",
+            "expression": "SUM ( fact_orders[revenue] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Revenue",
+            "description": "Item price on delivered orders. Excludes freight. Use for order-level analysis."
+          },
+          {
+            "name": "Revenue (Trend)",
+            "expression": "CALCULATE ( [Total Revenue], dim_date[is_truncated_period] = FALSE () )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Revenue",
+            "description": "Total Revenue excluding the truncated export tail after 2018-08-23. Use on time-series visuals."
+          },
+          {
+            "name": "Total Freight",
+            "expression": "SUM ( fact_orders[freight] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Revenue",
+            "description": "Customer-paid shipping. Never added into revenue."
+          },
+          {
+            "name": "Freight % of Revenue",
+            "expression": "DIVIDE ( [Total Freight], [Total Revenue] )",
+            "formatString": "0.0%",
+            "displayFolder": "Revenue"
+          },
+          {
+            "name": "Revenue MoM %",
+            "expression": [
+              "VAR isPartial =",
+              "    CALCULATE ( COUNTROWS ( dim_date ), dim_date[is_truncated_period] = TRUE () ) > 0",
+              "VAR cur = [Revenue (Trend)]",
+              "VAR prev = CALCULATE ( [Revenue (Trend)], DATEADD ( dim_date[date], -1, MONTH ) )",
+              "RETURN IF ( isPartial, BLANK (), DIVIDE ( cur - prev, prev ) )"
+            ],
+            "formatString": "0.0%",
+            "displayFolder": "Revenue",
+            "description": "Month-on-month change in trend revenue. Blank for Aug 2018, which is a partial month."
+          },
+          {
+            "name": "Orders",
+            "expression": "DISTINCTCOUNT ( fact_orders[order_id] )",
+            "formatString": "#,0",
+            "displayFolder": "Volume"
+          },
+          {
+            "name": "Customers",
+            "expression": "DISTINCTCOUNT ( fact_orders[customer_unique_id] )",
+            "formatString": "#,0",
+            "displayFolder": "Volume",
+            "description": "Distinct people (customer_unique_id)."
+          },
+          {
+            "name": "AOV (Mean)",
+            "expression": "DIVIDE ( [Total Revenue], [Orders] )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Order Value",
+            "description": "Mean order value. Skewed by large orders - show beside the median."
+          },
+          {
+            "name": "AOV (Median)",
+            "expression": "MEDIAN ( fact_orders[revenue] )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Order Value",
+            "description": "Median order value - the typical order. Prefer this headline."
+          },
+          {
+            "name": "AOV (Credit Card)",
+            "expression": "CALCULATE ( [AOV (Mean)], KEEPFILTERS ( fact_orders[payment_type] = \"credit_card\" ) )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Order Value",
+            "description": "Mean order value on credit-card orders only - the only method with instalments."
+          },
+          {
+            "name": "Multi-Item Order %",
+            "expression": "DIVIDE ( CALCULATE ( [Orders], KEEPFILTERS ( fact_orders[is_multi_item] = TRUE () ) ), [Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Order Value"
+          },
+          {
+            "name": "Late Rate %",
+            "expression": "DIVIDE ( CALCULATE ( [Orders], KEEPFILTERS ( fact_orders[is_late] = TRUE () ) ), [Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Delivery",
+            "description": "Share of orders delivered after the promised date."
+          },
+          {
+            "name": "Avg Delivery Days",
+            "expression": "AVERAGE ( fact_orders[delivery_days] )",
+            "formatString": "0.0",
+            "displayFolder": "Delivery"
+          },
+          {
+            "name": "Avg Review Score",
+            "expression": "AVERAGE ( fact_orders[review_score] )",
+            "formatString": "0.00",
+            "displayFolder": "Satisfaction",
+            "description": "Mean of non-blank review scores."
+          },
+          {
+            "name": "One-Star Rate %",
+            "expression": [
+              "DIVIDE (",
+              "    CALCULATE ( COUNTROWS ( fact_orders ), KEEPFILTERS ( fact_orders[review_score] = 1 ) ),",
+              "    CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[review_score] ) )",
+              ")"
+            ],
+            "formatString": "0.0%",
+            "displayFolder": "Satisfaction"
+          }
+        ]
+      },
+      {
+        "name": "fact_order_items",
+        "columns": [
+          {
+            "name": "order_id",
+            "dataType": "string",
+            "sourceColumn": "order_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_item_id",
+            "dataType": "int64",
+            "sourceColumn": "order_item_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "product_id",
+            "dataType": "string",
+            "sourceColumn": "product_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "seller_id",
+            "dataType": "string",
+            "sourceColumn": "seller_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "customer_unique_id",
+            "dataType": "string",
+            "sourceColumn": "customer_unique_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_date",
+            "dataType": "dateTime",
+            "sourceColumn": "order_date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd"
+          },
+          {
+            "name": "order_month",
+            "dataType": "string",
+            "sourceColumn": "order_month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "order_quarter",
+            "dataType": "string",
+            "sourceColumn": "order_quarter",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "category",
+            "dataType": "string",
+            "sourceColumn": "category",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "freight",
+            "dataType": "double",
+            "sourceColumn": "freight",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "customer_state",
+            "dataType": "string",
+            "sourceColumn": "customer_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "seller_state",
+            "dataType": "string",
+            "sourceColumn": "seller_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "same_state_delivery",
+            "dataType": "boolean",
+            "sourceColumn": "same_state_delivery",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "fact_order_items",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"fact_order_items.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"order_id\", type text}, {\"order_item_id\", Int64.Type}, {\"product_id\", type text}, {\"seller_id\", type text}, {\"customer_unique_id\", type text}, {\"order_date\", type date}, {\"order_month\", type text}, {\"order_quarter\", type text}, {\"category\", type text}, {\"revenue\", type number}, {\"freight\", type number}, {\"customer_state\", type text}, {\"seller_state\", type text}, {\"same_state_delivery\", type logical}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Item Revenue",
+            "expression": "SUM ( fact_order_items[revenue] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Revenue",
+            "description": "Revenue at line level. Use for product, category and seller visuals."
+          },
+          {
+            "name": "Items Sold",
+            "expression": "COUNTROWS ( fact_order_items )",
+            "formatString": "#,0",
+            "displayFolder": "Volume"
+          },
+          {
+            "name": "Products Sold",
+            "expression": "DISTINCTCOUNT ( fact_order_items[product_id] )",
+            "formatString": "#,0",
+            "displayFolder": "Volume"
+          },
+          {
+            "name": "Avg Item Price",
+            "expression": "DIVIDE ( [Item Revenue], [Items Sold] )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Order Value"
+          }
+        ]
+      },
+      {
+        "name": "dim_customers_segmented",
+        "columns": [
+          {
+            "name": "customer_unique_id",
+            "dataType": "string",
+            "sourceColumn": "customer_unique_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "customer_state",
+            "dataType": "string",
+            "sourceColumn": "customer_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "first_order_date",
+            "dataType": "dateTime",
+            "sourceColumn": "first_order_date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd"
+          },
+          {
+            "name": "last_order_date",
+            "dataType": "dateTime",
+            "sourceColumn": "last_order_date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd"
+          },
+          {
+            "name": "recency_days",
+            "dataType": "int64",
+            "sourceColumn": "recency_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "frequency_orders",
+            "dataType": "int64",
+            "sourceColumn": "frequency_orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "monetary_revenue",
+            "dataType": "double",
+            "sourceColumn": "monetary_revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "avg_order_value",
+            "dataType": "double",
+            "sourceColumn": "avg_order_value",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "total_items",
+            "dataType": "int64",
+            "sourceColumn": "total_items",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "distinct_categories",
+            "dataType": "int64",
+            "sourceColumn": "distinct_categories",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "distinct_sellers",
+            "dataType": "int64",
+            "sourceColumn": "distinct_sellers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "tenure_days",
+            "dataType": "int64",
+            "sourceColumn": "tenure_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_review_score",
+            "dataType": "double",
+            "sourceColumn": "avg_review_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "late_orders",
+            "dataType": "int64",
+            "sourceColumn": "late_orders",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "is_repeat_customer",
+            "dataType": "boolean",
+            "sourceColumn": "is_repeat_customer",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "r_score",
+            "dataType": "int64",
+            "sourceColumn": "r_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "f_score",
+            "dataType": "int64",
+            "sourceColumn": "f_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "m_score",
+            "dataType": "int64",
+            "sourceColumn": "m_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "rfm_cell",
+            "dataType": "string",
+            "sourceColumn": "rfm_cell",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "rfm_segment",
+            "dataType": "string",
+            "sourceColumn": "rfm_segment",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "kmeans_cluster",
+            "dataType": "int64",
+            "sourceColumn": "kmeans_cluster",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "kmeans_segment",
+            "dataType": "string",
+            "sourceColumn": "kmeans_segment",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "value_decile",
+            "dataType": "int64",
+            "sourceColumn": "value_decile",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "risk_tier",
+            "dataType": "string",
+            "sourceColumn": "risk_tier",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_customers_segmented",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_customers_segmented.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"customer_unique_id\", type text}, {\"customer_state\", type text}, {\"first_order_date\", type date}, {\"last_order_date\", type date}, {\"recency_days\", Int64.Type}, {\"frequency_orders\", Int64.Type}, {\"monetary_revenue\", type number}, {\"avg_order_value\", type number}, {\"total_items\", Int64.Type}, {\"distinct_categories\", Int64.Type}, {\"distinct_sellers\", Int64.Type}, {\"tenure_days\", Int64.Type}, {\"avg_review_score\", type number}, {\"late_orders\", Int64.Type}, {\"is_repeat_customer\", type logical}, {\"r_score\", Int64.Type}, {\"f_score\", Int64.Type}, {\"m_score\", Int64.Type}, {\"rfm_cell\", type text}, {\"rfm_segment\", type text}, {\"kmeans_cluster\", Int64.Type}, {\"kmeans_segment\", type text}, {\"value_decile\", Int64.Type}, {\"risk_tier\", type text}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Segment Customers",
+            "expression": "COUNTROWS ( dim_customers_segmented )",
+            "formatString": "#,0",
+            "displayFolder": "Segments"
+          },
+          {
+            "name": "Segment Revenue",
+            "expression": "SUM ( dim_customers_segmented[monetary_revenue] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Segments"
+          },
+          {
+            "name": "Segment Revenue %",
+            "expression": "DIVIDE ( [Segment Revenue], CALCULATE ( [Segment Revenue], ALL ( dim_customers_segmented ) ) )",
+            "formatString": "0.0%",
+            "displayFolder": "Segments"
+          },
+          {
+            "name": "Repeat Customers",
+            "expression": "CALCULATE ( COUNTROWS ( dim_customers_segmented ), KEEPFILTERS ( dim_customers_segmented[is_repeat_customer] = TRUE () ) )",
+            "formatString": "#,0",
+            "displayFolder": "Segments"
+          },
+          {
+            "name": "Repeat Rate %",
+            "expression": "DIVIDE ( [Repeat Customers], [Segment Customers] )",
+            "formatString": "0.0%",
+            "displayFolder": "Segments",
+            "description": "Share of customers with more than one order (~3%)."
+          },
+          {
+            "name": "Avg Customer Value",
+            "expression": "AVERAGE ( dim_customers_segmented[monetary_revenue] )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Segments"
+          }
+        ]
+      },
+      {
+        "name": "dim_date",
+        "columns": [
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "sourceColumn": "date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd",
+            "isKey": true
+          },
+          {
+            "name": "year",
+            "dataType": "int64",
+            "sourceColumn": "year",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "quarter",
+            "dataType": "string",
+            "sourceColumn": "quarter",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month",
+            "dataType": "string",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month_name",
+            "dataType": "string",
+            "sourceColumn": "month_name",
+            "summarizeBy": "none",
+            "sortByColumn": "month"
+          },
+          {
+            "name": "day_of_month",
+            "dataType": "int64",
+            "sourceColumn": "day_of_month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weekday",
+            "dataType": "string",
+            "sourceColumn": "weekday",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weekday_number",
+            "dataType": "int64",
+            "sourceColumn": "weekday_number",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "is_weekend",
+            "dataType": "boolean",
+            "sourceColumn": "is_weekend",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "is_truncated_period",
+            "dataType": "boolean",
+            "sourceColumn": "is_truncated_period",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_date",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_date.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"date\", type date}, {\"year\", Int64.Type}, {\"quarter\", type text}, {\"month\", type text}, {\"month_name\", type text}, {\"day_of_month\", Int64.Type}, {\"weekday\", type text}, {\"weekday_number\", Int64.Type}, {\"is_weekend\", type logical}, {\"is_truncated_period\", type logical}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "dataCategory": "Time"
+      },
+      {
+        "name": "dim_product_performance",
+        "columns": [
+          {
+            "name": "product_id",
+            "dataType": "string",
+            "sourceColumn": "product_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "category",
+            "dataType": "string",
+            "sourceColumn": "category",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "units",
+            "dataType": "int64",
+            "sourceColumn": "units",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "orders",
+            "dataType": "int64",
+            "sourceColumn": "orders",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "avg_item_price",
+            "dataType": "double",
+            "sourceColumn": "avg_item_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "min_price",
+            "dataType": "double",
+            "sourceColumn": "min_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "max_price",
+            "dataType": "double",
+            "sourceColumn": "max_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "freight",
+            "dataType": "double",
+            "sourceColumn": "freight",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "sellers",
+            "dataType": "int64",
+            "sourceColumn": "sellers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue_rank",
+            "dataType": "int64",
+            "sourceColumn": "revenue_rank",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cumulative_pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "cumulative_pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "sold_once_only",
+            "dataType": "boolean",
+            "sourceColumn": "sold_once_only",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_product_performance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_product_performance.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"product_id\", type text}, {\"category\", type text}, {\"units\", Int64.Type}, {\"orders\", Int64.Type}, {\"revenue\", type number}, {\"avg_item_price\", type number}, {\"min_price\", type number}, {\"max_price\", type number}, {\"freight\", type number}, {\"sellers\", Int64.Type}, {\"revenue_rank\", Int64.Type}, {\"cumulative_pct_of_revenue\", type number}, {\"sold_once_only\", type logical}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_category_performance",
+        "columns": [
+          {
+            "name": "category",
+            "dataType": "string",
+            "sourceColumn": "category",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "units",
+            "dataType": "int64",
+            "sourceColumn": "units",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "orders",
+            "dataType": "int64",
+            "sourceColumn": "orders",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "products",
+            "dataType": "int64",
+            "sourceColumn": "products",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "avg_item_price",
+            "dataType": "double",
+            "sourceColumn": "avg_item_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_price",
+            "dataType": "double",
+            "sourceColumn": "median_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "freight",
+            "dataType": "double",
+            "sourceColumn": "freight",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cumulative_pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "cumulative_pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "freight_pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "freight_pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "quadrant",
+            "dataType": "string",
+            "sourceColumn": "quadrant",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue_mar_may_2018",
+            "dataType": "double",
+            "sourceColumn": "revenue_mar_may_2018",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue_jun_aug_2018",
+            "dataType": "double",
+            "sourceColumn": "revenue_jun_aug_2018",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "momentum_change_brl",
+            "dataType": "double",
+            "sourceColumn": "momentum_change_brl",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "momentum_change_pct",
+            "dataType": "double",
+            "sourceColumn": "momentum_change_pct",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_category_performance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_category_performance.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"category\", type text}, {\"revenue\", type number}, {\"units\", Int64.Type}, {\"orders\", Int64.Type}, {\"products\", Int64.Type}, {\"avg_item_price\", type number}, {\"median_price\", type number}, {\"freight\", type number}, {\"pct_of_revenue\", type number}, {\"cumulative_pct_of_revenue\", type number}, {\"freight_pct_of_revenue\", type number}, {\"quadrant\", type text}, {\"revenue_mar_may_2018\", type number}, {\"revenue_jun_aug_2018\", type number}, {\"momentum_change_brl\", type number}, {\"momentum_change_pct\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Category Momentum",
+            "expression": "SUM ( dim_category_performance[momentum_change_brl] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Category",
+            "description": "Jun-Aug 2018 vs Mar-May 2018 revenue change. Seasonality not separable."
+          },
+          {
+            "name": "Category Units",
+            "expression": "SUM ( dim_category_performance[units] )",
+            "formatString": "#,0",
+            "displayFolder": "Category"
+          },
+          {
+            "name": "Category Avg Price",
+            "expression": "AVERAGE ( dim_category_performance[avg_item_price] )",
+            "formatString": "\"R$\"#,0.00",
+            "displayFolder": "Category"
+          }
+        ]
+      },
+      {
+        "name": "dim_seller_performance",
+        "columns": [
+          {
+            "name": "seller_id",
+            "dataType": "string",
+            "sourceColumn": "seller_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "items_sold",
+            "dataType": "int64",
+            "sourceColumn": "items_sold",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "orders_n",
+            "dataType": "int64",
+            "sourceColumn": "orders_n",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "products",
+            "dataType": "int64",
+            "sourceColumn": "products",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "avg_item_price",
+            "dataType": "double",
+            "sourceColumn": "avg_item_price",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "seller_state",
+            "dataType": "string",
+            "sourceColumn": "seller_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_delivery_days",
+            "dataType": "double",
+            "sourceColumn": "avg_delivery_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "late_rate_pct",
+            "dataType": "double",
+            "sourceColumn": "late_rate_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_review_score",
+            "dataType": "double",
+            "sourceColumn": "avg_review_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cumulative_pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "cumulative_pct_of_revenue",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_seller_performance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_seller_performance.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"seller_id\", type text}, {\"revenue\", type number}, {\"items_sold\", Int64.Type}, {\"orders_n\", Int64.Type}, {\"products\", Int64.Type}, {\"avg_item_price\", type number}, {\"seller_state\", type text}, {\"avg_delivery_days\", type number}, {\"late_rate_pct\", type number}, {\"avg_review_score\", type number}, {\"pct_of_revenue\", type number}, {\"cumulative_pct_of_revenue\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_region_performance",
+        "columns": [
+          {
+            "name": "customer_state",
+            "dataType": "string",
+            "sourceColumn": "customer_state",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "orders",
+            "dataType": "int64",
+            "sourceColumn": "orders",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "customers",
+            "dataType": "int64",
+            "sourceColumn": "customers",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "aov",
+            "dataType": "double",
+            "sourceColumn": "aov",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_delivery_days",
+            "dataType": "double",
+            "sourceColumn": "avg_delivery_days",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "late_rate_pct",
+            "dataType": "double",
+            "sourceColumn": "late_rate_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_review_score",
+            "dataType": "double",
+            "sourceColumn": "avg_review_score",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "freight_pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "freight_pct_of_revenue",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "pct_of_revenue",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_region_performance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_region_performance.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"customer_state\", type text}, {\"orders\", Int64.Type}, {\"customers\", Int64.Type}, {\"revenue\", type number}, {\"aov\", type number}, {\"avg_delivery_days\", type number}, {\"late_rate_pct\", type number}, {\"avg_review_score\", type number}, {\"freight_pct_of_revenue\", type number}, {\"pct_of_revenue\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_payment_performance",
+        "columns": [
+          {
+            "name": "payment_type",
+            "dataType": "string",
+            "sourceColumn": "payment_type",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "orders_n",
+            "dataType": "int64",
+            "sourceColumn": "orders_n",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "aov",
+            "dataType": "double",
+            "sourceColumn": "aov",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "median_value",
+            "dataType": "double",
+            "sourceColumn": "median_value",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_items",
+            "dataType": "double",
+            "sourceColumn": "avg_items",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_review",
+            "dataType": "double",
+            "sourceColumn": "avg_review",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "avg_installments",
+            "dataType": "double",
+            "sourceColumn": "avg_installments",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pct_of_orders",
+            "dataType": "double",
+            "sourceColumn": "pct_of_orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pct_of_revenue",
+            "dataType": "double",
+            "sourceColumn": "pct_of_revenue",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_payment_performance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_payment_performance.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"payment_type\", type text}, {\"orders_n\", Int64.Type}, {\"revenue\", type number}, {\"aov\", type number}, {\"median_value\", type number}, {\"avg_items\", type number}, {\"avg_review\", type number}, {\"avg_installments\", type number}, {\"pct_of_orders\", type number}, {\"pct_of_revenue\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "fact_cohort_retention",
+        "columns": [
+          {
+            "name": "cohort_month",
+            "dataType": "string",
+            "sourceColumn": "cohort_month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "months_since_first_purchase",
+            "dataType": "int64",
+            "sourceColumn": "months_since_first_purchase",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "retention_pct",
+            "dataType": "double",
+            "sourceColumn": "retention_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "cohort_size",
+            "dataType": "int64",
+            "sourceColumn": "cohort_size",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "retained_customers",
+            "dataType": "int64",
+            "sourceColumn": "retained_customers",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "fact_cohort_retention",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"fact_cohort_retention.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"cohort_month\", type text}, {\"months_since_first_purchase\", Int64.Type}, {\"retention_pct\", type number}, {\"cohort_size\", Int64.Type}, {\"retained_customers\", Int64.Type}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Avg Retention %",
+            "expression": "DIVIDE ( AVERAGE ( fact_cohort_retention[retention_pct] ), 100 )",
+            "formatString": "0.00%",
+            "displayFolder": "Cohorts"
+          },
+          {
+            "name": "Retention % After Month 0",
+            "expression": "CALCULATE ( [Avg Retention %], KEEPFILTERS ( fact_cohort_retention[months_since_first_purchase] > 0 ) )",
+            "formatString": "0.00%",
+            "displayFolder": "Cohorts",
+            "description": "Excludes month 0, which is always 100%."
+          }
+        ]
+      },
+      {
+        "name": "dim_cohort_summary",
+        "columns": [
+          {
+            "name": "cohort_month",
+            "dataType": "string",
+            "sourceColumn": "cohort_month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "new_customers",
+            "dataType": "int64",
+            "sourceColumn": "new_customers",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "revenue",
+            "dataType": "double",
+            "sourceColumn": "revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "revenue_per_customer",
+            "dataType": "double",
+            "sourceColumn": "revenue_per_customer",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "months_observed",
+            "dataType": "int64",
+            "sourceColumn": "months_observed",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ever_repeated_pct",
+            "dataType": "double",
+            "sourceColumn": "ever_repeated_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "repeat_rate_3mo_pct",
+            "dataType": "double",
+            "sourceColumn": "repeat_rate_3mo_pct",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_cohort_summary",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_cohort_summary.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"cohort_month\", type text}, {\"new_customers\", Int64.Type}, {\"revenue\", type number}, {\"revenue_per_customer\", type number}, {\"months_observed\", Int64.Type}, {\"ever_repeated_pct\", type number}, {\"repeat_rate_3mo_pct\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "3-Month Repeat Rate %",
+            "expression": "DIVIDE ( AVERAGE ( dim_cohort_summary[repeat_rate_3mo_pct] ), 100 )",
+            "formatString": "0.00%",
+            "displayFolder": "Cohorts",
+            "description": "Fair cross-cohort comparison (equal 3-month window)."
+          }
+        ]
+      },
+      {
+        "name": "fact_revenue_forecast",
+        "columns": [
+          {
+            "name": "period",
+            "dataType": "dateTime",
+            "sourceColumn": "period",
+            "summarizeBy": "none",
+            "formatString": "yyyy-mm-dd"
+          },
+          {
+            "name": "period_label",
+            "dataType": "string",
+            "sourceColumn": "period_label",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "type",
+            "dataType": "string",
+            "sourceColumn": "type",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "actual",
+            "dataType": "double",
+            "sourceColumn": "actual",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "forecast",
+            "dataType": "double",
+            "sourceColumn": "forecast",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "lower_95",
+            "dataType": "double",
+            "sourceColumn": "lower_95",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "upper_95",
+            "dataType": "double",
+            "sourceColumn": "upper_95",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "value",
+            "dataType": "double",
+            "sourceColumn": "value",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "fact_revenue_forecast",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"fact_revenue_forecast.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"period\", type date}, {\"period_label\", type text}, {\"type\", type text}, {\"actual\", type number}, {\"forecast\", type number}, {\"lower_95\", type number}, {\"upper_95\", type number}, {\"value\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Actual Revenue",
+            "expression": "SUM ( fact_revenue_forecast[actual] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast"
+          },
+          {
+            "name": "Forecast Revenue",
+            "expression": "SUM ( fact_revenue_forecast[forecast] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "ARIMA(0,1,1) point forecast."
+          },
+          {
+            "name": "Forecast Lower 95",
+            "expression": "SUM ( fact_revenue_forecast[lower_95] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "Per-month bound. Do not total across months: summed bounds are not a valid interval."
+          },
+          {
+            "name": "Forecast Upper 95",
+            "expression": "SUM ( fact_revenue_forecast[upper_95] )",
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "Per-month bound. Do not total across months: summed bounds are not a valid interval."
+          },
+          {
+            "name": "Next Month Lower 95",
+            "expression": [
+              "VAR firstPeriod =",
+              "    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = \"forecast\" )",
+              "RETURN CALCULATE ( SUM ( fact_revenue_forecast[lower_95] ), fact_revenue_forecast[period] = firstPeriod )"
+            ],
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "Lower 95% bound for the first forecast month."
+          },
+          {
+            "name": "Next Month Upper 95",
+            "expression": [
+              "VAR firstPeriod =",
+              "    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = \"forecast\" )",
+              "RETURN CALCULATE ( SUM ( fact_revenue_forecast[upper_95] ), fact_revenue_forecast[period] = firstPeriod )"
+            ],
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "Upper 95% bound for the first forecast month."
+          },
+          {
+            "name": "Next Month Forecast",
+            "expression": [
+              "VAR firstPeriod =",
+              "    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = \"forecast\" )",
+              "RETURN CALCULATE ( [Forecast Revenue], fact_revenue_forecast[period] = firstPeriod )"
+            ],
+            "formatString": "\"R$\"#,0",
+            "displayFolder": "Forecast",
+            "description": "First forecast month."
+          }
+        ]
+      },
+      {
+        "name": "dim_forecast_model_comparison",
+        "columns": [
+          {
+            "name": "model",
+            "dataType": "string",
+            "sourceColumn": "model",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MAE",
+            "dataType": "double",
+            "sourceColumn": "MAE",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RMSE",
+            "dataType": "double",
+            "sourceColumn": "RMSE",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MAPE_pct",
+            "dataType": "double",
+            "sourceColumn": "MAPE_pct",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "vs_naive_pct",
+            "dataType": "double",
+            "sourceColumn": "vs_naive_pct",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_forecast_model_comparison",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Parquet.Document(File.Contents(DataFolder & \"dim_forecast_model_comparison.parquet\")),",
+                "    Typed = Table.TransformColumnTypes(Source, {{\"model\", type text}, {\"MAE\", type number}, {\"RMSE\", type number}, {\"MAPE_pct\", type number}, {\"vs_naive_pct\", type number}})",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "fb0566a2-1dad-5441-9fe6-511f6ff42d21",
+        "fromTable": "fact_order_items",
+        "fromColumn": "order_id",
+        "toTable": "fact_orders",
+        "toColumn": "order_id"
+      },
+      {
+        "name": "7e82aa41-2c10-56b5-9db4-a79313614dd3",
+        "fromTable": "fact_orders",
+        "fromColumn": "customer_unique_id",
+        "toTable": "dim_customers_segmented",
+        "toColumn": "customer_unique_id"
+      },
+      {
+        "name": "ed8119a6-482c-5533-babd-4f5861771265",
+        "fromTable": "fact_orders",
+        "fromColumn": "order_date",
+        "toTable": "dim_date",
+        "toColumn": "date"
+      },
+      {
+        "name": "d6a1e076-1237-5935-8ce1-10691e9ca0ef",
+        "fromTable": "fact_orders",
+        "fromColumn": "customer_state",
+        "toTable": "dim_region_performance",
+        "toColumn": "customer_state"
+      },
+      {
+        "name": "8fa6ee4d-7059-53dc-a406-aa4a34c58940",
+        "fromTable": "fact_orders",
+        "fromColumn": "payment_type",
+        "toTable": "dim_payment_performance",
+        "toColumn": "payment_type"
+      },
+      {
+        "name": "0f5b0fba-462f-5afe-a35d-2cacceb01352",
+        "fromTable": "fact_order_items",
+        "fromColumn": "product_id",
+        "toTable": "dim_product_performance",
+        "toColumn": "product_id"
+      },
+      {
+        "name": "a841535f-6ef8-5ab4-b4c4-38363881593b",
+        "fromTable": "fact_order_items",
+        "fromColumn": "category",
+        "toTable": "dim_category_performance",
+        "toColumn": "category"
+      },
+      {
+        "name": "cd50f3ed-7690-5a8a-8322-ded23b5ebc87",
+        "fromTable": "fact_order_items",
+        "fromColumn": "seller_id",
+        "toTable": "dim_seller_performance",
+        "toColumn": "seller_id"
+      },
+      {
+        "name": "e3e83a8b-8326-56c2-9243-96161a8bc795",
+        "fromTable": "fact_cohort_retention",
+        "fromColumn": "cohort_month",
+        "toTable": "dim_cohort_summary",
+        "toColumn": "cohort_month"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "DataFolder",
+        "kind": "m",
+        "expression": "\"C:\\Users\\Omkar\\OneDrive\\Documents\\data analysis\\ecommerce-analytics\\data\\powerbi\\\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]",
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Text"
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      },
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"DataFolder\", \"fact_orders\", \"fact_order_items\", \"dim_customers_segmented\", \"dim_date\", \"dim_product_performance\", \"dim_category_performance\", \"dim_seller_performance\", \"dim_region_performance\", \"dim_payment_performance\", \"fact_cohort_retention\", \"dim_cohort_summary\", \"fact_revenue_forecast\", \"dim_forecast_model_comparison\"]"
+      }
+    ]
+  }
+}

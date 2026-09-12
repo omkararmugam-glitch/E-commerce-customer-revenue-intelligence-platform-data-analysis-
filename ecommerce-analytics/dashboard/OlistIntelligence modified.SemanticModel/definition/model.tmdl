@@ -1,0 +1,30 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["DataFolder", "fact_orders", "fact_order_items", "dim_customers_segmented", "dim_date", "dim_product_performance", "dim_category_performance", "dim_seller_performance", "dim_region_performance", "dim_payment_performance", "fact_cohort_retention", "dim_cohort_summary", "fact_revenue_forecast", "dim_forecast_model_comparison"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table fact_orders
+ref table fact_order_items
+ref table dim_customers_segmented
+ref table dim_date
+ref table dim_product_performance
+ref table dim_category_performance
+ref table dim_seller_performance
+ref table dim_region_performance
+ref table dim_payment_performance
+ref table fact_cohort_retention
+ref table dim_cohort_summary
+ref table fact_revenue_forecast
+ref table dim_forecast_model_comparison
+
+ref cultureInfo en-US
+

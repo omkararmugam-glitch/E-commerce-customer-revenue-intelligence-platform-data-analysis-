@@ -1,0 +1,242 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "region_table",
+  "position": {
+    "x": 16,
+    "y": 480,
+    "z": 11,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "customer_state"
+                }
+              },
+              "queryRef": "dim_region_performance.customer_state",
+              "nativeQueryRef": "customer_state",
+              "displayName": "State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "orders"
+                }
+              },
+              "queryRef": "dim_region_performance.orders",
+              "nativeQueryRef": "orders",
+              "displayName": "Orders"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "aov"
+                }
+              },
+              "queryRef": "dim_region_performance.aov",
+              "nativeQueryRef": "aov",
+              "displayName": "AOV"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "avg_delivery_days"
+                }
+              },
+              "queryRef": "dim_region_performance.avg_delivery_days",
+              "nativeQueryRef": "avg_delivery_days",
+              "displayName": "Delivery Days"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "late_rate_pct"
+                }
+              },
+              "queryRef": "dim_region_performance.late_rate_pct",
+              "nativeQueryRef": "late_rate_pct",
+              "displayName": "Late %"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_region_performance"
+                    }
+                  },
+                  "Property": "avg_review_score"
+                }
+              },
+              "queryRef": "dim_region_performance.avg_review_score",
+              "nativeQueryRef": "avg_review_score",
+              "displayName": "Review"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_region_performance"
+                  }
+                },
+                "Property": "orders"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "76.5D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.customer_state"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "95.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.orders"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "95.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.aov"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "114.8D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.avg_delivery_days"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "95.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.late_rate_pct"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "95.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_region_performance.avg_review_score"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'State Scorecard'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

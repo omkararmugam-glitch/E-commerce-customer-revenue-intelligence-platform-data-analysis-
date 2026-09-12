@@ -1,0 +1,213 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "seller_table",
+  "position": {
+    "x": 646,
+    "y": 480,
+    "z": 12,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_seller_performance"
+                    }
+                  },
+                  "Property": "seller_state"
+                }
+              },
+              "queryRef": "dim_seller_performance.seller_state",
+              "nativeQueryRef": "seller_state",
+              "displayName": "Seller State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_seller_performance"
+                    }
+                  },
+                  "Property": "orders_n"
+                }
+              },
+              "queryRef": "dim_seller_performance.orders_n",
+              "nativeQueryRef": "orders_n",
+              "displayName": "Orders"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_seller_performance"
+                    }
+                  },
+                  "Property": "revenue"
+                }
+              },
+              "queryRef": "dim_seller_performance.revenue",
+              "nativeQueryRef": "revenue",
+              "displayName": "Revenue"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_seller_performance"
+                    }
+                  },
+                  "Property": "late_rate_pct"
+                }
+              },
+              "queryRef": "dim_seller_performance.late_rate_pct",
+              "nativeQueryRef": "late_rate_pct",
+              "displayName": "Late %"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_seller_performance"
+                    }
+                  },
+                  "Property": "avg_review_score"
+                }
+              },
+              "queryRef": "dim_seller_performance.avg_review_score",
+              "nativeQueryRef": "avg_review_score",
+              "displayName": "Review"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_seller_performance"
+                  }
+                },
+                "Property": "revenue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "116.9D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_seller_performance.seller_state"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106.3D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_seller_performance.orders_n"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "138.2D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_seller_performance.revenue"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106.3D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_seller_performance.late_rate_pct"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "106.3D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_seller_performance.avg_review_score"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sellers by Revenue'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

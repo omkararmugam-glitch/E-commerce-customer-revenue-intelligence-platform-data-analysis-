@@ -1,0 +1,242 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "top_products",
+  "position": {
+    "x": 646,
+    "y": 480,
+    "z": 12,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "revenue_rank"
+                }
+              },
+              "queryRef": "dim_product_performance.revenue_rank",
+              "nativeQueryRef": "revenue_rank",
+              "displayName": "Rank"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "category"
+                }
+              },
+              "queryRef": "dim_product_performance.category",
+              "nativeQueryRef": "category",
+              "displayName": "Category"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "units"
+                }
+              },
+              "queryRef": "dim_product_performance.units",
+              "nativeQueryRef": "units",
+              "displayName": "Units"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "avg_item_price"
+                }
+              },
+              "queryRef": "dim_product_performance.avg_item_price",
+              "nativeQueryRef": "avg_item_price",
+              "displayName": "Avg Price"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "revenue"
+                }
+              },
+              "queryRef": "dim_product_performance.revenue",
+              "nativeQueryRef": "revenue",
+              "displayName": "Revenue"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_product_performance"
+                    }
+                  },
+                  "Property": "cumulative_pct_of_revenue"
+                }
+              },
+              "queryRef": "dim_product_performance.cumulative_pct_of_revenue",
+              "nativeQueryRef": "cumulative_pct_of_revenue",
+              "displayName": "Cumulative %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_product_performance"
+                  }
+                },
+                "Property": "revenue_rank"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "55.0D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.revenue_rank"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "173.0D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.category"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "70.8D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.units"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "86.5D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.avg_item_price"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "94.4D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.revenue"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "94.4D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_product_performance.cumulative_pct_of_revenue"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Products by Revenue'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

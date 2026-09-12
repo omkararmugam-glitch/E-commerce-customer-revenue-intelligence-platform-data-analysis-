@@ -1,0 +1,5 @@
+expression DataFolder = "C:\Users\Omkar\OneDrive\Documents\data analysis\ecommerce-analytics\data\powerbi\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6218bd01-c433-46db-b770-6d7e5796bc45
+
+	annotation PBI_ResultType = Text
+

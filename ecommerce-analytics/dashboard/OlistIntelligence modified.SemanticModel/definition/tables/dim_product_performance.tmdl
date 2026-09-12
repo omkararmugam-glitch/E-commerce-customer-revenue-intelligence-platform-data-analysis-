@@ -1,0 +1,90 @@
+table dim_product_performance
+	lineageTag: 1cc1eb9c-7566-4715-bf80-088dbdc565b7
+
+	column product_id
+		dataType: string
+		lineageTag: ef3db43e-9c55-4d94-b3b2-84c6283287f9
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column category
+		dataType: string
+		lineageTag: 10a49d6d-812e-49a2-bbe5-aff56eb68c77
+		summarizeBy: none
+		sourceColumn: category
+
+	column units
+		dataType: int64
+		lineageTag: 7d2db97c-58e3-4da7-aac6-7c37df509892
+		summarizeBy: sum
+		sourceColumn: units
+
+	column orders
+		dataType: int64
+		lineageTag: f3cfe414-bbee-4a75-aac2-6e9a01a3fe95
+		summarizeBy: sum
+		sourceColumn: orders
+
+	column revenue
+		dataType: double
+		lineageTag: d6351dec-c26e-418a-8b0b-676109cbfeb5
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column avg_item_price
+		dataType: double
+		lineageTag: 60123881-3627-497a-8b03-360ac14cc5ca
+		summarizeBy: none
+		sourceColumn: avg_item_price
+
+	column min_price
+		dataType: double
+		lineageTag: d082e04b-13d9-447d-8285-0deb5122a52e
+		summarizeBy: none
+		sourceColumn: min_price
+
+	column max_price
+		dataType: double
+		lineageTag: ae4b1816-2342-4930-9e44-2358ae1c6aad
+		summarizeBy: none
+		sourceColumn: max_price
+
+	column freight
+		dataType: double
+		lineageTag: 2ef0df77-edc6-4f4f-8c81-3bc3691bf9bf
+		summarizeBy: sum
+		sourceColumn: freight
+
+	column sellers
+		dataType: int64
+		lineageTag: bea7d967-7eff-4bb7-9231-c8c65ac998e1
+		summarizeBy: none
+		sourceColumn: sellers
+
+	column revenue_rank
+		dataType: int64
+		lineageTag: 7c860acc-6cc5-4859-930d-02da2d908d72
+		summarizeBy: none
+		sourceColumn: revenue_rank
+
+	column cumulative_pct_of_revenue
+		dataType: double
+		lineageTag: e9e2860f-37ed-4af6-8e0b-eba73f21f4b1
+		summarizeBy: none
+		sourceColumn: cumulative_pct_of_revenue
+
+	column sold_once_only
+		dataType: boolean
+		lineageTag: 645b7618-1b80-4992-8720-2ee1ba92cb69
+		summarizeBy: none
+		sourceColumn: sold_once_only
+
+	partition dim_product_performance = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_product_performance.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"product_id", type text}, {"category", type text}, {"units", Int64.Type}, {"orders", Int64.Type}, {"revenue", type number}, {"avg_item_price", type number}, {"min_price", type number}, {"max_price", type number}, {"freight", type number}, {"sellers", Int64.Type}, {"revenue_rank", Int64.Type}, {"cumulative_pct_of_revenue", type number}, {"sold_once_only", type logical}})
+				in
+				    Typed
+

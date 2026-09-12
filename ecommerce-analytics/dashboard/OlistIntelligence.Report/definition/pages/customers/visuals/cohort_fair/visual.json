@@ -1,0 +1,98 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "cohort_fair",
+  "position": {
+    "x": 646,
+    "y": 480,
+    "z": 13,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 13
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_cohort_summary"
+                    }
+                  },
+                  "Property": "cohort_month"
+                }
+              },
+              "queryRef": "dim_cohort_summary.cohort_month",
+              "nativeQueryRef": "cohort_month",
+              "displayName": "Cohort"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_cohort_summary"
+                    }
+                  },
+                  "Property": "3-Month Repeat Rate %"
+                }
+              },
+              "queryRef": "dim_cohort_summary.3-Month Repeat Rate %",
+              "nativeQueryRef": "3-Month Repeat Rate %",
+              "displayName": "3-Month Repeat Rate"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_cohort_summary"
+                  }
+                },
+                "Property": "cohort_month"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'3-Month Repeat Rate by Cohort  (fair comparison)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

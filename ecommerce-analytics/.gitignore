@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+.pytest_cache/
+
+# Environments
+venv/
+.venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Data (keep folders, ignore contents)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/raw/olist/
+data/raw/olist/*
+!data/raw/olist/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Derived Power BI exports (regenerate with: python src/export_powerbi.py)
+data/powerbi/*
+!data/powerbi/.gitkeep
+
+# SQLite analytical database (regenerate with: python sql/build_db.py)
+*.db

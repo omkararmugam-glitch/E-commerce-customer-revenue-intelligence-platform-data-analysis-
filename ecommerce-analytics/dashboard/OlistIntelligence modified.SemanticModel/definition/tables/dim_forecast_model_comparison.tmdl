@@ -1,0 +1,42 @@
+table dim_forecast_model_comparison
+	lineageTag: 8e467b0d-1528-467a-a05e-08e52fd71b45
+
+	column model
+		dataType: string
+		lineageTag: 92d2a30e-5263-4527-aa53-7f45d51ea1a2
+		summarizeBy: none
+		sourceColumn: model
+
+	column MAE
+		dataType: double
+		lineageTag: dc206311-e5be-41ba-8cd4-4b749202f317
+		summarizeBy: none
+		sourceColumn: MAE
+
+	column RMSE
+		dataType: double
+		lineageTag: 41f80186-4fc8-42cf-ba0d-98e2d4421044
+		summarizeBy: none
+		sourceColumn: RMSE
+
+	column MAPE_pct
+		dataType: double
+		lineageTag: 345d299a-401a-4e49-b9d8-ea757e5c086a
+		summarizeBy: none
+		sourceColumn: MAPE_pct
+
+	column vs_naive_pct
+		dataType: double
+		lineageTag: 0d5ac8b9-3d9c-4f1a-a691-9eb0471ffd4b
+		summarizeBy: none
+		sourceColumn: vs_naive_pct
+
+	partition dim_forecast_model_comparison = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_forecast_model_comparison.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"model", type text}, {"MAE", type number}, {"RMSE", type number}, {"MAPE_pct", type number}, {"vs_naive_pct", type number}})
+				in
+				    Typed
+

@@ -1,0 +1,53 @@
+table fact_cohort_retention
+	lineageTag: 347a6ed6-f9bd-4810-993d-1e6b9e8c13fb
+
+	measure 'Avg Retention %' = DIVIDE ( AVERAGE ( fact_cohort_retention[retention_pct] ), 100 )
+		formatString: 0.00%
+		displayFolder: Cohorts
+		lineageTag: 9c707788-4305-4106-8bee-61f16760ebc7
+
+	/// Excludes month 0, which is always 100%.
+	measure 'Retention % After Month 0' = CALCULATE ( [Avg Retention %], KEEPFILTERS ( fact_cohort_retention[months_since_first_purchase] > 0 ) )
+		formatString: 0.00%
+		displayFolder: Cohorts
+		lineageTag: 3f992b62-7300-479f-9a3a-97c2baabc124
+
+	column cohort_month
+		dataType: string
+		lineageTag: 952c5c79-f065-4879-a853-03db5e3a8190
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+	column months_since_first_purchase
+		dataType: int64
+		lineageTag: 06ce7c7e-a80b-4c55-81b6-11d5e5f0b9ec
+		summarizeBy: none
+		sourceColumn: months_since_first_purchase
+
+	column retention_pct
+		dataType: double
+		lineageTag: e40f1f7e-a099-4a2c-921a-6f55cdbfc62a
+		summarizeBy: none
+		sourceColumn: retention_pct
+
+	column cohort_size
+		dataType: int64
+		lineageTag: 6dc7cbf8-d44b-4ce4-a9a8-28c69d89dd45
+		summarizeBy: none
+		sourceColumn: cohort_size
+
+	column retained_customers
+		dataType: int64
+		lineageTag: 62a97896-0749-4e3f-b72b-f1c23154dc1d
+		summarizeBy: sum
+		sourceColumn: retained_customers
+
+	partition fact_cohort_retention = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "fact_cohort_retention.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"cohort_month", type text}, {"months_since_first_purchase", Int64.Type}, {"retention_pct", type number}, {"cohort_size", Int64.Type}, {"retained_customers", Int64.Type}})
+				in
+				    Typed
+

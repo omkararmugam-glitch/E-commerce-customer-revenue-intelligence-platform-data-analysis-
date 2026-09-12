@@ -1,0 +1,36 @@
+relationship fb0566a2-1dad-5441-9fe6-511f6ff42d21
+	fromColumn: fact_order_items.order_id
+	toColumn: fact_orders.order_id
+
+relationship 7e82aa41-2c10-56b5-9db4-a79313614dd3
+	fromColumn: fact_orders.customer_unique_id
+	toColumn: dim_customers_segmented.customer_unique_id
+
+relationship ed8119a6-482c-5533-babd-4f5861771265
+	fromColumn: fact_orders.order_date
+	toColumn: dim_date.date
+
+relationship d6a1e076-1237-5935-8ce1-10691e9ca0ef
+	fromColumn: fact_orders.customer_state
+	toColumn: dim_region_performance.customer_state
+
+relationship 8fa6ee4d-7059-53dc-a406-aa4a34c58940
+	fromColumn: fact_orders.payment_type
+	toColumn: dim_payment_performance.payment_type
+
+relationship 0f5b0fba-462f-5afe-a35d-2cacceb01352
+	fromColumn: fact_order_items.product_id
+	toColumn: dim_product_performance.product_id
+
+relationship a841535f-6ef8-5ab4-b4c4-38363881593b
+	fromColumn: fact_order_items.category
+	toColumn: dim_category_performance.category
+
+relationship cd50f3ed-7690-5a8a-8322-ded23b5ebc87
+	fromColumn: fact_order_items.seller_id
+	toColumn: dim_seller_performance.seller_id
+
+relationship e3e83a8b-8326-56c2-9243-96161a8bc795
+	fromColumn: fact_cohort_retention.cohort_month
+	toColumn: dim_cohort_summary.cohort_month
+

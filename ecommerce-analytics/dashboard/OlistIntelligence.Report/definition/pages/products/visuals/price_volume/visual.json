@@ -1,0 +1,118 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "price_volume",
+  "position": {
+    "x": 646,
+    "y": 236,
+    "z": 11,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_category_performance"
+                    }
+                  },
+                  "Property": "category"
+                }
+              },
+              "queryRef": "dim_category_performance.category",
+              "nativeQueryRef": "category",
+              "displayName": "Category"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_category_performance"
+                    }
+                  },
+                  "Property": "Category Units"
+                }
+              },
+              "queryRef": "dim_category_performance.Category Units",
+              "nativeQueryRef": "Category Units",
+              "displayName": "Units Sold"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_category_performance"
+                    }
+                  },
+                  "Property": "Category Avg Price"
+                }
+              },
+              "queryRef": "dim_category_performance.Category Avg Price",
+              "nativeQueryRef": "Category Avg Price",
+              "displayName": "Avg Price"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_order_items"
+                    }
+                  },
+                  "Property": "Item Revenue"
+                }
+              },
+              "queryRef": "fact_order_items.Item Revenue",
+              "nativeQueryRef": "Item Revenue",
+              "displayName": "Revenue"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Category Price vs Volume  (bubble = revenue)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

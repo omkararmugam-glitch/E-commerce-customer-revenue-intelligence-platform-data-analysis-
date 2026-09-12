@@ -1,0 +1,218 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "model_table",
+  "position": {
+    "x": 16,
+    "y": 482,
+    "z": 7,
+    "height": 222,
+    "width": 1248,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_forecast_model_comparison"
+                    }
+                  },
+                  "Property": "model"
+                }
+              },
+              "queryRef": "dim_forecast_model_comparison.model",
+              "nativeQueryRef": "model",
+              "displayName": "Model"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_forecast_model_comparison"
+                    }
+                  },
+                  "Property": "MAE"
+                }
+              },
+              "queryRef": "dim_forecast_model_comparison.MAE",
+              "nativeQueryRef": "MAE",
+              "displayName": "MAE"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_forecast_model_comparison"
+                    }
+                  },
+                  "Property": "RMSE"
+                }
+              },
+              "queryRef": "dim_forecast_model_comparison.RMSE",
+              "nativeQueryRef": "RMSE",
+              "displayName": "RMSE"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_forecast_model_comparison"
+                    }
+                  },
+                  "Property": "MAPE_pct"
+                }
+              },
+              "queryRef": "dim_forecast_model_comparison.MAPE_pct",
+              "nativeQueryRef": "MAPE_pct",
+              "displayName": "MAPE %"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_forecast_model_comparison"
+                    }
+                  },
+                  "Property": "vs_naive_pct"
+                }
+              },
+              "queryRef": "dim_forecast_model_comparison.vs_naive_pct",
+              "nativeQueryRef": "vs_naive_pct",
+              "displayName": "vs Naive %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_forecast_model_comparison"
+                  }
+                },
+                "Property": "MAE"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "401.3D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_forecast_model_comparison.model"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "200.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_forecast_model_comparison.MAE"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "200.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_forecast_model_comparison.RMSE"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "200.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_forecast_model_comparison.MAPE_pct"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "200.7D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "dim_forecast_model_comparison.vs_naive_pct"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Model Comparison on 4 Held-Out Months  (negative = better than naive)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,60 @@
+table dim_cohort_summary
+	lineageTag: 6d175f18-a0c2-43f8-839e-67d6a74a3447
+
+	/// Fair cross-cohort comparison (equal 3-month window).
+	measure '3-Month Repeat Rate %' = DIVIDE ( AVERAGE ( dim_cohort_summary[repeat_rate_3mo_pct] ), 100 )
+		formatString: 0.00%
+		displayFolder: Cohorts
+		lineageTag: dcc3da7c-9b09-4729-81f6-9f0a27e05e16
+
+	column cohort_month
+		dataType: string
+		lineageTag: 1a85dcbd-1dfb-4014-8d5e-bcdab405f7b0
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+	column new_customers
+		dataType: int64
+		lineageTag: 8927f7e2-89d2-4410-85ca-7fe15358c319
+		summarizeBy: sum
+		sourceColumn: new_customers
+
+	column revenue
+		dataType: double
+		lineageTag: 1c1b85c9-00d3-4f61-bb50-47bedf06d051
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column revenue_per_customer
+		dataType: double
+		lineageTag: ec3d1fed-764f-4eec-a83a-ea85e4c78060
+		summarizeBy: none
+		sourceColumn: revenue_per_customer
+
+	column months_observed
+		dataType: int64
+		lineageTag: 66e239b1-a46d-4ccc-b7cd-11b820dbe00b
+		summarizeBy: none
+		sourceColumn: months_observed
+
+	column ever_repeated_pct
+		dataType: double
+		lineageTag: 2849265b-9303-47cc-b0df-fc4d66b68d60
+		summarizeBy: none
+		sourceColumn: ever_repeated_pct
+
+	column repeat_rate_3mo_pct
+		dataType: double
+		lineageTag: 4a3a2461-83cb-4cd2-9a6a-5f8c6ade3f1a
+		summarizeBy: none
+		sourceColumn: repeat_rate_3mo_pct
+
+	partition dim_cohort_summary = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_cohort_summary.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"cohort_month", type text}, {"new_customers", Int64.Type}, {"revenue", type number}, {"revenue_per_customer", type number}, {"months_observed", Int64.Type}, {"ever_repeated_pct", type number}, {"repeat_rate_3mo_pct", type number}})
+				in
+				    Typed
+

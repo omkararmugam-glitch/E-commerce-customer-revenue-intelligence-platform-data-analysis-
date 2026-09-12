@@ -1,0 +1,72 @@
+table dim_payment_performance
+	lineageTag: a79bf80b-cecd-4a3c-9d10-43c77637d1c8
+
+	column payment_type
+		dataType: string
+		lineageTag: d3441264-de6c-404b-a456-f9e72a8b1fb2
+		summarizeBy: none
+		sourceColumn: payment_type
+
+	column orders_n
+		dataType: int64
+		lineageTag: 239e2057-7c59-4a49-9a5f-9460de9ad8bd
+		summarizeBy: sum
+		sourceColumn: orders_n
+
+	column revenue
+		dataType: double
+		lineageTag: 5dc08a2b-de46-4e9b-b7fc-bbeed04e1d62
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column aov
+		dataType: double
+		lineageTag: a26776f4-ba4e-45b2-b7af-aa1dd6bae669
+		summarizeBy: none
+		sourceColumn: aov
+
+	column median_value
+		dataType: double
+		lineageTag: 61024663-2faf-4eef-8e47-9656bf533088
+		summarizeBy: none
+		sourceColumn: median_value
+
+	column avg_items
+		dataType: double
+		lineageTag: c207a225-1f56-4707-9207-203d8420f397
+		summarizeBy: none
+		sourceColumn: avg_items
+
+	column avg_review
+		dataType: double
+		lineageTag: df46c7bf-8df5-4152-97d3-229f5e8d5e01
+		summarizeBy: none
+		sourceColumn: avg_review
+
+	column avg_installments
+		dataType: double
+		lineageTag: cab3e348-f493-4679-baf4-7dff97c4d492
+		summarizeBy: none
+		sourceColumn: avg_installments
+
+	column pct_of_orders
+		dataType: double
+		lineageTag: 29b1fec7-2b4c-49c7-a4ab-ee9a381a0f42
+		summarizeBy: none
+		sourceColumn: pct_of_orders
+
+	column pct_of_revenue
+		dataType: double
+		lineageTag: 106fb23d-5acd-4a72-81cd-e73617e7bb6d
+		summarizeBy: none
+		sourceColumn: pct_of_revenue
+
+	partition dim_payment_performance = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_payment_performance.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"payment_type", type text}, {"orders_n", Int64.Type}, {"revenue", type number}, {"aov", type number}, {"median_value", type number}, {"avg_items", type number}, {"avg_review", type number}, {"avg_installments", type number}, {"pct_of_orders", type number}, {"pct_of_revenue", type number}})
+				in
+				    Typed
+

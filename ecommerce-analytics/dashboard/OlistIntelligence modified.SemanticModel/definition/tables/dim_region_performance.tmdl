@@ -1,0 +1,72 @@
+table dim_region_performance
+	lineageTag: 309b8334-8c7b-4c91-90c2-360a06be11f2
+
+	column customer_state
+		dataType: string
+		lineageTag: 24517096-177d-4f94-b77b-3f6c253e3e0d
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column orders
+		dataType: int64
+		lineageTag: 07909717-44c2-4924-b5c6-b0660d517478
+		summarizeBy: sum
+		sourceColumn: orders
+
+	column customers
+		dataType: int64
+		lineageTag: 1f80d31d-201e-4995-a9cc-f981387b5624
+		summarizeBy: sum
+		sourceColumn: customers
+
+	column revenue
+		dataType: double
+		lineageTag: bed662ce-5fa4-4e46-b12f-face955e278d
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column aov
+		dataType: double
+		lineageTag: 86ca6e2c-f569-4fa8-a05a-cc414ad0f7bf
+		summarizeBy: none
+		sourceColumn: aov
+
+	column avg_delivery_days
+		dataType: double
+		lineageTag: 624b0e56-092e-4a4a-8c34-82f8a53fb41f
+		summarizeBy: none
+		sourceColumn: avg_delivery_days
+
+	column late_rate_pct
+		dataType: double
+		lineageTag: e9ad85ae-444a-4297-bbff-7b9a2c79f772
+		summarizeBy: none
+		sourceColumn: late_rate_pct
+
+	column avg_review_score
+		dataType: double
+		lineageTag: da2a6eee-cbf3-429e-a08e-c8f710a3de03
+		summarizeBy: none
+		sourceColumn: avg_review_score
+
+	column freight_pct_of_revenue
+		dataType: double
+		lineageTag: e3a85d9c-3b13-4f62-bbf8-fc186cd3b1f4
+		summarizeBy: none
+		sourceColumn: freight_pct_of_revenue
+
+	column pct_of_revenue
+		dataType: double
+		lineageTag: 595c706d-d117-43cf-9771-e6a966915575
+		summarizeBy: none
+		sourceColumn: pct_of_revenue
+
+	partition dim_region_performance = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_region_performance.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"customer_state", type text}, {"orders", Int64.Type}, {"customers", Int64.Type}, {"revenue", type number}, {"aov", type number}, {"avg_delivery_days", type number}, {"late_rate_pct", type number}, {"avg_review_score", type number}, {"freight_pct_of_revenue", type number}, {"pct_of_revenue", type number}})
+				in
+				    Typed
+

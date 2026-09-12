@@ -1,0 +1,98 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "retention_curve",
+  "position": {
+    "x": 16,
+    "y": 480,
+    "z": 12,
+    "width": 618,
+    "height": 232,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_cohort_retention"
+                    }
+                  },
+                  "Property": "months_since_first_purchase"
+                }
+              },
+              "queryRef": "fact_cohort_retention.months_since_first_purchase",
+              "nativeQueryRef": "months_since_first_purchase",
+              "displayName": "Months Since First Purchase"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_cohort_retention"
+                    }
+                  },
+                  "Property": "Retention % After Month 0"
+                }
+              },
+              "queryRef": "fact_cohort_retention.Retention % After Month 0",
+              "nativeQueryRef": "Retention % After Month 0",
+              "displayName": "Retention"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fact_cohort_retention"
+                  }
+                },
+                "Property": "months_since_first_purchase"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Retention by Months Since First Purchase  (all cohorts, month 0 excluded)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

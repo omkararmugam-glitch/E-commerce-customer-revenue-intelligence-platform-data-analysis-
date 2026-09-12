@@ -1,0 +1,113 @@
+table fact_revenue_forecast
+	lineageTag: 0d987b00-2f90-4a80-a7b1-22e153f9ea03
+
+	measure 'Actual Revenue' = SUM ( fact_revenue_forecast[actual] )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: a86450af-6ddb-4cc7-b67e-27ef7c8ddca3
+
+	/// ARIMA(0,1,1) point forecast.
+	measure 'Forecast Revenue' = SUM ( fact_revenue_forecast[forecast] )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: 651cc626-e67b-4780-aff3-7ba178fd656f
+
+	/// Per-month bound. Do not total across months: summed bounds are not a valid interval.
+	measure 'Forecast Lower 95' = SUM ( fact_revenue_forecast[lower_95] )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: 747e39a7-e0d0-484f-bf86-bd72848e4ef2
+
+	/// Per-month bound. Do not total across months: summed bounds are not a valid interval.
+	measure 'Forecast Upper 95' = SUM ( fact_revenue_forecast[upper_95] )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: ec14b447-92cb-4639-9002-662eabf62dd8
+
+	/// Lower 95% bound for the first forecast month.
+	measure 'Next Month Lower 95' =
+			VAR firstPeriod =
+			    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = "forecast" )
+			RETURN CALCULATE ( SUM ( fact_revenue_forecast[lower_95] ), fact_revenue_forecast[period] = firstPeriod )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: be1aa2a3-75ae-423c-a384-9e91a63413d9
+
+	/// Upper 95% bound for the first forecast month.
+	measure 'Next Month Upper 95' =
+			VAR firstPeriod =
+			    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = "forecast" )
+			RETURN CALCULATE ( SUM ( fact_revenue_forecast[upper_95] ), fact_revenue_forecast[period] = firstPeriod )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: fa418be9-e50b-42cb-a8a6-5021a2876713
+
+	/// First forecast month.
+	measure 'Next Month Forecast' =
+			VAR firstPeriod =
+			    CALCULATE ( MIN ( fact_revenue_forecast[period] ), fact_revenue_forecast[type] = "forecast" )
+			RETURN CALCULATE ( [Forecast Revenue], fact_revenue_forecast[period] = firstPeriod )
+		formatString: "R$"#,0
+		displayFolder: Forecast
+		lineageTag: 8675072a-955f-4748-a19c-cd4c2257ad98
+
+	column period
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: dbc95be1-7dbc-4099-b2d4-d208e40a40a3
+		summarizeBy: none
+		sourceColumn: period
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column period_label
+		dataType: string
+		lineageTag: 5350e2d7-c6f5-464d-8af4-1575b0a33b34
+		summarizeBy: none
+		sourceColumn: period_label
+
+	column type
+		dataType: string
+		lineageTag: 10825862-7168-41d4-8d55-e829266fd607
+		summarizeBy: none
+		sourceColumn: type
+
+	column actual
+		dataType: double
+		lineageTag: cd4d4b7a-665b-4b8a-af3d-fa5199806914
+		summarizeBy: sum
+		sourceColumn: actual
+
+	column forecast
+		dataType: double
+		lineageTag: a633991a-9601-4a9b-be82-9bfc34b9e6cb
+		summarizeBy: sum
+		sourceColumn: forecast
+
+	column lower_95
+		dataType: double
+		lineageTag: 6eeb472a-2896-434a-9e83-05d876d8c9e0
+		summarizeBy: none
+		sourceColumn: lower_95
+
+	column upper_95
+		dataType: double
+		lineageTag: e9b654b4-cf23-4437-8e47-8c33b7954156
+		summarizeBy: none
+		sourceColumn: upper_95
+
+	column value
+		dataType: double
+		lineageTag: db00d27c-1839-4907-b0a1-610f11174fc5
+		summarizeBy: sum
+		sourceColumn: value
+
+	partition fact_revenue_forecast = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "fact_revenue_forecast.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"period", type date}, {"period_label", type text}, {"type", type text}, {"actual", type number}, {"forecast", type number}, {"lower_95", type number}, {"upper_95", type number}, {"value", type number}})
+				in
+				    Typed
+

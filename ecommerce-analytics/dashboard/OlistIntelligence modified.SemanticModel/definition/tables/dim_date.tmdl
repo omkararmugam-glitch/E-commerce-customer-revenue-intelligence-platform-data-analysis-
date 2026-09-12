@@ -1,0 +1,78 @@
+table dim_date
+	lineageTag: f8755ec6-3ac4-4edf-9007-7f136ac24162
+	dataCategory: Time
+
+	column date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 9b5e0620-2d65-41b2-b529-630efc840542
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column year
+		dataType: int64
+		lineageTag: 357fa51d-20ac-41ee-8148-58b963b71da8
+		summarizeBy: none
+		sourceColumn: year
+
+	column quarter
+		dataType: string
+		lineageTag: b2ba7059-0476-4e1b-bfb2-aff46cb67dfc
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column month
+		dataType: string
+		lineageTag: d767ab86-89e6-4d57-82f4-51faaaa69edf
+		summarizeBy: none
+		sourceColumn: month
+
+	column month_name
+		dataType: string
+		lineageTag: 2bddd07f-53d0-43d8-abbb-ea02897cb122
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: month
+
+	column day_of_month
+		dataType: int64
+		lineageTag: 9e74c084-2008-4244-9730-88cf1c54843b
+		summarizeBy: none
+		sourceColumn: day_of_month
+
+	column weekday
+		dataType: string
+		lineageTag: 210c3b9d-4426-4e12-9205-8c6466d06b1d
+		summarizeBy: none
+		sourceColumn: weekday
+
+	column weekday_number
+		dataType: int64
+		lineageTag: 9484d317-b0a8-4b97-abf7-76b7823713af
+		summarizeBy: none
+		sourceColumn: weekday_number
+
+	column is_weekend
+		dataType: boolean
+		lineageTag: 52fe8185-fb95-44d8-9e2b-224ff02ee9c6
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	column is_truncated_period
+		dataType: boolean
+		lineageTag: 9e843ff5-10d6-4044-8a48-c621136ec020
+		summarizeBy: none
+		sourceColumn: is_truncated_period
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_date.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"date", type date}, {"year", Int64.Type}, {"quarter", type text}, {"month", type text}, {"month_name", type text}, {"day_of_month", Int64.Type}, {"weekday", type text}, {"weekday_number", Int64.Type}, {"is_weekend", type logical}, {"is_truncated_period", type logical}})
+				in
+				    Typed
+

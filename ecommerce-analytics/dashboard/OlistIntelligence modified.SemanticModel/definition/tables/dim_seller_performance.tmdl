@@ -1,0 +1,84 @@
+table dim_seller_performance
+	lineageTag: 647b1740-a7e0-44dc-a8a7-468cb0ef1fb9
+
+	column seller_id
+		dataType: string
+		lineageTag: dfb4df4d-3113-45c7-8230-7018aa115f50
+		summarizeBy: none
+		sourceColumn: seller_id
+
+	column revenue
+		dataType: double
+		lineageTag: de3e33e9-a20c-42b5-b861-eecdc1256712
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column items_sold
+		dataType: int64
+		lineageTag: 6595fec9-5a41-4f48-9912-775dd96c9725
+		summarizeBy: sum
+		sourceColumn: items_sold
+
+	column orders_n
+		dataType: int64
+		lineageTag: d8cd77dd-7a3a-4912-a62e-24792ce0c967
+		summarizeBy: sum
+		sourceColumn: orders_n
+
+	column products
+		dataType: int64
+		lineageTag: ca0f8b16-c401-4215-a47c-30c8da89d479
+		summarizeBy: sum
+		sourceColumn: products
+
+	column avg_item_price
+		dataType: double
+		lineageTag: 3f9e1de0-6e37-40ad-82b6-0712957d3b21
+		summarizeBy: none
+		sourceColumn: avg_item_price
+
+	column seller_state
+		dataType: string
+		lineageTag: 98774bb3-80e2-48c5-bacb-90fe17195218
+		summarizeBy: none
+		sourceColumn: seller_state
+
+	column avg_delivery_days
+		dataType: double
+		lineageTag: 77988955-d3a1-42a3-8a85-4f13c5bf2925
+		summarizeBy: none
+		sourceColumn: avg_delivery_days
+
+	column late_rate_pct
+		dataType: double
+		lineageTag: 7f0b4f3c-3813-480b-b18f-de3184b28844
+		summarizeBy: none
+		sourceColumn: late_rate_pct
+
+	column avg_review_score
+		dataType: double
+		lineageTag: 68b61d96-5c9e-449d-9247-97c946595d9c
+		summarizeBy: none
+		sourceColumn: avg_review_score
+
+	column pct_of_revenue
+		dataType: double
+		lineageTag: bee1b462-4ac0-4d8a-b640-f1796a6e807a
+		summarizeBy: none
+		sourceColumn: pct_of_revenue
+
+	column cumulative_pct_of_revenue
+		dataType: double
+		lineageTag: 70c5e947-716f-451b-a34e-2ffbe95e3845
+		summarizeBy: none
+		sourceColumn: cumulative_pct_of_revenue
+
+	partition dim_seller_performance = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_seller_performance.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"seller_id", type text}, {"revenue", type number}, {"items_sold", Int64.Type}, {"orders_n", Int64.Type}, {"products", Int64.Type}, {"avg_item_price", type number}, {"seller_state", type text}, {"avg_delivery_days", type number}, {"late_rate_pct", type number}, {"avg_review_score", type number}, {"pct_of_revenue", type number}, {"cumulative_pct_of_revenue", type number}})
+				in
+				    Typed
+

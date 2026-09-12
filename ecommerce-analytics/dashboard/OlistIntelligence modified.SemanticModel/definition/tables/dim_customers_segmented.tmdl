@@ -1,0 +1,193 @@
+table dim_customers_segmented
+	lineageTag: f2a31ded-e3bf-444d-8b07-44f1345cb7e0
+
+	measure 'Segment Customers' = COUNTROWS ( dim_customers_segmented )
+		formatString: #,0
+		displayFolder: Segments
+		lineageTag: c449e9b8-f394-4637-91fa-93199bf9da8e
+
+	measure 'Segment Revenue' = SUM ( dim_customers_segmented[monetary_revenue] )
+		formatString: "R$"#,0
+		displayFolder: Segments
+		lineageTag: 16a2ce69-9227-4494-8080-93d59a402e90
+
+	measure 'Segment Revenue %' = DIVIDE ( [Segment Revenue], CALCULATE ( [Segment Revenue], ALL ( dim_customers_segmented ) ) )
+		formatString: 0.0%
+		displayFolder: Segments
+		lineageTag: 73ae5d98-e83b-4861-944d-1175429911cc
+
+	measure 'Repeat Customers' = CALCULATE ( COUNTROWS ( dim_customers_segmented ), KEEPFILTERS ( dim_customers_segmented[is_repeat_customer] = TRUE () ) )
+		formatString: #,0
+		displayFolder: Segments
+		lineageTag: 29fbe345-ab4e-4e32-9248-e22557b6549b
+
+	/// Share of customers with more than one order (~3%).
+	measure 'Repeat Rate %' = DIVIDE ( [Repeat Customers], [Segment Customers] )
+		formatString: 0.0%
+		displayFolder: Segments
+		lineageTag: 96000055-6ca6-43ce-a4e5-3f73846ffea1
+
+	measure 'Avg Customer Value' = AVERAGE ( dim_customers_segmented[monetary_revenue] )
+		formatString: "R$"#,0.00
+		displayFolder: Segments
+		lineageTag: f8a82655-24f8-4e77-9356-291e2530da33
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: abe364f9-4e11-4cea-9299-75331b6f9132
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column customer_state
+		dataType: string
+		lineageTag: fe30f00a-be51-4821-9d2f-8731a4c6dc2b
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column first_order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 9e57c381-2a61-471f-85e5-9d743f5052a0
+		summarizeBy: none
+		sourceColumn: first_order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column last_order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 698a1224-bfa4-47d4-968b-51bc3873ab81
+		summarizeBy: none
+		sourceColumn: last_order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column recency_days
+		dataType: int64
+		lineageTag: c6eb2f31-4aba-4585-ad31-172ac01be7fa
+		summarizeBy: none
+		sourceColumn: recency_days
+
+	column frequency_orders
+		dataType: int64
+		lineageTag: 82d611f9-9120-4ffa-9bda-47912683f7ab
+		summarizeBy: none
+		sourceColumn: frequency_orders
+
+	column monetary_revenue
+		dataType: double
+		lineageTag: ad410f7c-307c-4d5c-b93a-7b4526138c53
+		summarizeBy: sum
+		sourceColumn: monetary_revenue
+
+	column avg_order_value
+		dataType: double
+		lineageTag: 97d3a1a5-8423-412a-85c1-7a0afb154042
+		summarizeBy: none
+		sourceColumn: avg_order_value
+
+	column total_items
+		dataType: int64
+		lineageTag: f2658a9e-8d48-42f7-a43b-83d50484cfc7
+		summarizeBy: sum
+		sourceColumn: total_items
+
+	column distinct_categories
+		dataType: int64
+		lineageTag: 0b32700d-7273-4ab0-bfee-b951ada8f9ee
+		summarizeBy: none
+		sourceColumn: distinct_categories
+
+	column distinct_sellers
+		dataType: int64
+		lineageTag: 7814b4a5-4f94-418b-9aac-34d4e328f38d
+		summarizeBy: none
+		sourceColumn: distinct_sellers
+
+	column tenure_days
+		dataType: int64
+		lineageTag: 480a8278-3534-4277-b9b2-412401c4c4c2
+		summarizeBy: none
+		sourceColumn: tenure_days
+
+	column avg_review_score
+		dataType: double
+		lineageTag: 07055a11-e98b-40bc-be9e-e7ef1cf63155
+		summarizeBy: none
+		sourceColumn: avg_review_score
+
+	column late_orders
+		dataType: int64
+		lineageTag: cbb17499-4a6d-4931-80dc-f5a2bfa7b11c
+		summarizeBy: sum
+		sourceColumn: late_orders
+
+	column is_repeat_customer
+		dataType: boolean
+		lineageTag: e07b1b1c-34b4-4f02-ac67-4578f85f867d
+		summarizeBy: none
+		sourceColumn: is_repeat_customer
+
+	column r_score
+		dataType: int64
+		lineageTag: 3a8c8af9-1c46-4685-b38c-87bb648f133f
+		summarizeBy: none
+		sourceColumn: r_score
+
+	column f_score
+		dataType: int64
+		lineageTag: a7a53b74-33cd-448b-834e-c0417ff22e00
+		summarizeBy: none
+		sourceColumn: f_score
+
+	column m_score
+		dataType: int64
+		lineageTag: c9ab408a-2b5c-4c6c-9b62-20f56a0bb2ce
+		summarizeBy: none
+		sourceColumn: m_score
+
+	column rfm_cell
+		dataType: string
+		lineageTag: fcce8ce4-8dd3-4d38-8d15-4bc8c4ef239f
+		summarizeBy: none
+		sourceColumn: rfm_cell
+
+	column rfm_segment
+		dataType: string
+		lineageTag: 34bfbac0-0d63-48da-ae4b-89f8c08f6bb0
+		summarizeBy: none
+		sourceColumn: rfm_segment
+
+	column kmeans_cluster
+		dataType: int64
+		lineageTag: c7a564c0-80b8-49ee-8a9a-285a028fb3eb
+		summarizeBy: none
+		sourceColumn: kmeans_cluster
+
+	column kmeans_segment
+		dataType: string
+		lineageTag: 95471841-752d-40da-84b1-fa6ffb5d502d
+		summarizeBy: none
+		sourceColumn: kmeans_segment
+
+	column value_decile
+		dataType: int64
+		lineageTag: c517cb51-f2b4-474b-8341-1306152107b4
+		summarizeBy: none
+		sourceColumn: value_decile
+
+	column risk_tier
+		dataType: string
+		lineageTag: 27112b80-7fe4-4774-becb-10db84b8eeac
+		summarizeBy: none
+		sourceColumn: risk_tier
+
+	partition dim_customers_segmented = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_customers_segmented.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"customer_unique_id", type text}, {"customer_state", type text}, {"first_order_date", type date}, {"last_order_date", type date}, {"recency_days", Int64.Type}, {"frequency_orders", Int64.Type}, {"monetary_revenue", type number}, {"avg_order_value", type number}, {"total_items", Int64.Type}, {"distinct_categories", Int64.Type}, {"distinct_sellers", Int64.Type}, {"tenure_days", Int64.Type}, {"avg_review_score", type number}, {"late_orders", Int64.Type}, {"is_repeat_customer", type logical}, {"r_score", Int64.Type}, {"f_score", Int64.Type}, {"m_score", Int64.Type}, {"rfm_cell", type text}, {"rfm_segment", type text}, {"kmeans_cluster", Int64.Type}, {"kmeans_segment", type text}, {"value_decile", Int64.Type}, {"risk_tier", type text}})
+				in
+				    Typed
+

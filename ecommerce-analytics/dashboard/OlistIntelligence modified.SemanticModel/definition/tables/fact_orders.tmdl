@@ -1,0 +1,266 @@
+table fact_orders
+	lineageTag: c0345b56-a2ba-46ff-b52a-466f6c5d48f0
+
+	/// Item price on delivered orders. Excludes freight. Use for order-level analysis.
+	measure 'Total Revenue' = SUM ( fact_orders[revenue] )
+		formatString: "R$"#,0
+		displayFolder: Revenue
+		lineageTag: 6bdb9155-86c9-4e3a-99df-1c126d4fd29a
+
+	/// Total Revenue excluding the truncated export tail after 2018-08-23. Use on time-series visuals.
+	measure 'Revenue (Trend)' = CALCULATE ( [Total Revenue], dim_date[is_truncated_period] = FALSE () )
+		formatString: "R$"#,0
+		displayFolder: Revenue
+		lineageTag: ec127729-791a-4be3-b44e-ab073dc7e394
+
+	/// Customer-paid shipping. Never added into revenue.
+	measure 'Total Freight' = SUM ( fact_orders[freight] )
+		formatString: "R$"#,0
+		displayFolder: Revenue
+		lineageTag: 75a6b270-2f61-4197-bb3a-e3d8b91049c1
+
+	measure 'Freight % of Revenue' = DIVIDE ( [Total Freight], [Total Revenue] )
+		formatString: 0.0%
+		displayFolder: Revenue
+		lineageTag: 69f66c17-fb0f-4074-8f04-9d603d064a0f
+
+	/// Month-on-month change in trend revenue. Blank for Aug 2018, which is a partial month.
+	measure 'Revenue MoM %' =
+			VAR isPartial =
+			    CALCULATE ( COUNTROWS ( dim_date ), dim_date[is_truncated_period] = TRUE () ) > 0
+			VAR cur = [Revenue (Trend)]
+			VAR prev = CALCULATE ( [Revenue (Trend)], DATEADD ( dim_date[date], -1, MONTH ) )
+			RETURN IF ( isPartial, BLANK (), DIVIDE ( cur - prev, prev ) )
+		formatString: 0.0%
+		displayFolder: Revenue
+		lineageTag: 9ae83da7-c773-41cc-8b63-70647004a57e
+
+	measure Orders = DISTINCTCOUNT ( fact_orders[order_id] )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: 12e60502-c947-44fe-9035-ee7bc164a325
+
+	/// Distinct people (customer_unique_id).
+	measure Customers = DISTINCTCOUNT ( fact_orders[customer_unique_id] )
+		formatString: #,0
+		displayFolder: Volume
+		lineageTag: 38b6dcc9-1c65-4ce2-b05c-540cdff5a17f
+
+	/// Mean order value. Skewed by large orders - show beside the median.
+	measure 'AOV (Mean)' = DIVIDE ( [Total Revenue], [Orders] )
+		formatString: "R$"#,0.00
+		displayFolder: Order Value
+		lineageTag: 6059a2eb-a5c4-4d10-9e17-1d71c547bd56
+
+	/// Median order value - the typical order. Prefer this headline.
+	measure 'AOV (Median)' = MEDIAN ( fact_orders[revenue] )
+		formatString: "R$"#,0.00
+		displayFolder: Order Value
+		lineageTag: 4432c64e-c17e-4f3e-8e22-bedc8d27cb4f
+
+	/// Mean order value on credit-card orders only - the only method with instalments.
+	measure 'AOV (Credit Card)' = CALCULATE ( [AOV (Mean)], KEEPFILTERS ( fact_orders[payment_type] = "credit_card" ) )
+		formatString: "R$"#,0.00
+		displayFolder: Order Value
+		lineageTag: 47ae9834-c0bc-4e57-9e27-795f2dddad32
+
+	measure 'Multi-Item Order %' = DIVIDE ( CALCULATE ( [Orders], KEEPFILTERS ( fact_orders[is_multi_item] = TRUE () ) ), [Orders] )
+		formatString: 0.0%
+		displayFolder: Order Value
+		lineageTag: 90dea433-3a28-4b43-85fb-d49308ecfacd
+
+	/// Share of orders delivered after the promised date.
+	measure 'Late Rate %' = DIVIDE ( CALCULATE ( [Orders], KEEPFILTERS ( fact_orders[is_late] = TRUE () ) ), [Orders] )
+		formatString: 0.0%
+		displayFolder: Delivery
+		lineageTag: d63ec1dc-06c0-45dc-b02a-23e4975e27db
+
+	measure 'Avg Delivery Days' = AVERAGE ( fact_orders[delivery_days] )
+		formatString: 0.0
+		displayFolder: Delivery
+		lineageTag: 50f1565a-1d58-4aa7-b2ad-e13afb50d7be
+
+	/// Mean of non-blank review scores.
+	measure 'Avg Review Score' = AVERAGE ( fact_orders[review_score] )
+		formatString: 0.00
+		displayFolder: Satisfaction
+		lineageTag: eacbaed8-10ad-4ac6-9b38-0c02c36419f3
+
+	measure 'One-Star Rate %' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( fact_orders ), KEEPFILTERS ( fact_orders[review_score] = 1 ) ),
+			    CALCULATE ( COUNTROWS ( fact_orders ), NOT ISBLANK ( fact_orders[review_score] ) )
+			)
+		formatString: 0.0%
+		displayFolder: Satisfaction
+		lineageTag: fdf83536-2981-4e79-8f5a-8a8f27412118
+
+	column order_id
+		dataType: string
+		lineageTag: 55615257-146e-43ed-b4d1-a39273367bac
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 6d4f998f-f2c8-4a1d-94f0-8a179702c0ab
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column order_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 6f977bff-8398-43d0-8d3c-9d22ccf71ad5
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_timestamp
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		lineageTag: e61fb2ff-efc8-41b8-8dd5-3c22137deb16
+		summarizeBy: none
+		sourceColumn: order_timestamp
+
+	column order_year
+		dataType: int64
+		lineageTag: c9286952-8347-4533-9557-8069b7e9ffe0
+		summarizeBy: none
+		sourceColumn: order_year
+
+	column order_month
+		dataType: string
+		lineageTag: fa2645c0-13c5-4910-a9e6-033af2f1392b
+		summarizeBy: none
+		sourceColumn: order_month
+
+	column order_quarter
+		dataType: string
+		lineageTag: ea0410ed-ca51-42d3-ba31-2760bb357976
+		summarizeBy: none
+		sourceColumn: order_quarter
+
+	column order_weekday
+		dataType: string
+		lineageTag: 2d671356-62f0-4a66-b2e9-2772a7b816d9
+		summarizeBy: none
+		sourceColumn: order_weekday
+
+	column order_hour
+		dataType: int64
+		lineageTag: 2cf125e6-1d4b-48f1-a80c-a6b61fbe1304
+		summarizeBy: none
+		sourceColumn: order_hour
+
+	column revenue
+		dataType: double
+		lineageTag: a2269019-e7e8-498e-84a1-9c864c6d28fb
+		summarizeBy: sum
+		sourceColumn: revenue
+
+	column freight
+		dataType: double
+		lineageTag: a0c75e60-3f03-4cea-9bcb-c47fcf353d55
+		summarizeBy: sum
+		sourceColumn: freight
+
+	column items_in_order
+		dataType: int64
+		lineageTag: 437bbe2e-9b85-4564-8cb6-a94a7b8a2c38
+		summarizeBy: sum
+		sourceColumn: items_in_order
+
+	column distinct_products
+		dataType: int64
+		lineageTag: da5bb46b-1373-48f7-a7ac-601b0cbf3d07
+		summarizeBy: none
+		sourceColumn: distinct_products
+
+	column distinct_sellers
+		dataType: int64
+		lineageTag: b7037a5d-6615-470a-a909-f12bcd490c8a
+		summarizeBy: none
+		sourceColumn: distinct_sellers
+
+	column avg_item_price
+		dataType: double
+		lineageTag: c710dbd3-36cb-43f0-a40f-84995c87f846
+		summarizeBy: none
+		sourceColumn: avg_item_price
+
+	column is_multi_item
+		dataType: boolean
+		lineageTag: e11eb9fe-5d73-47c9-9d40-a245ee7b3a25
+		summarizeBy: none
+		sourceColumn: is_multi_item
+
+	column payment_type
+		dataType: string
+		lineageTag: f261ed52-d325-464a-9512-bdadb18a99c3
+		summarizeBy: none
+		sourceColumn: payment_type
+
+	column max_installments
+		dataType: double
+		lineageTag: fe325287-1f12-4ee1-a2d0-0b5ca82eef42
+		summarizeBy: none
+		sourceColumn: max_installments
+
+	column review_score
+		dataType: double
+		lineageTag: b7bb4f54-845c-4dcf-bc15-1686ab1e74e0
+		summarizeBy: none
+		sourceColumn: review_score
+
+	column delivery_days
+		dataType: double
+		lineageTag: e6705e8f-5f2b-4265-a28d-33f58554dea2
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+	column estimated_days
+		dataType: double
+		lineageTag: 0651669d-a976-425b-81f2-a63863abb543
+		summarizeBy: none
+		sourceColumn: estimated_days
+
+	column delivery_vs_estimate_days
+		dataType: double
+		lineageTag: ecd09122-e4aa-4998-9e65-a31065f3f395
+		summarizeBy: none
+		sourceColumn: delivery_vs_estimate_days
+
+	column is_late
+		dataType: boolean
+		lineageTag: d6f85768-62b7-40d9-9d98-edfb2ba42b47
+		summarizeBy: none
+		sourceColumn: is_late
+
+	column customer_state
+		dataType: string
+		lineageTag: 1b54245d-6159-4252-99ed-19e1d2c0508c
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	column customer_city
+		dataType: string
+		lineageTag: ee183117-0d75-4711-a8fe-371f66d7b8f8
+		summarizeBy: none
+		sourceColumn: customer_city
+
+	column is_truncated_period
+		dataType: boolean
+		lineageTag: c067dadb-bff3-47a8-bded-0ba726182a38
+		summarizeBy: none
+		sourceColumn: is_truncated_period
+
+	partition fact_orders = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "fact_orders.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"order_id", type text}, {"customer_unique_id", type text}, {"order_date", type date}, {"order_timestamp", type datetime}, {"order_year", Int64.Type}, {"order_month", type text}, {"order_quarter", type text}, {"order_weekday", type text}, {"order_hour", Int64.Type}, {"revenue", type number}, {"freight", type number}, {"items_in_order", Int64.Type}, {"distinct_products", Int64.Type}, {"distinct_sellers", Int64.Type}, {"avg_item_price", type number}, {"is_multi_item", type logical}, {"payment_type", type text}, {"max_installments", type number}, {"review_score", type number}, {"delivery_days", type number}, {"estimated_days", type number}, {"delivery_vs_estimate_days", type number}, {"is_late", type logical}, {"customer_state", type text}, {"customer_city", type text}, {"is_truncated_period", type logical}})
+				in
+				    Typed
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "OlistIntelligence modified"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "df88d106-de8f-48a8-9800-63c711768718"
+  }
+}
