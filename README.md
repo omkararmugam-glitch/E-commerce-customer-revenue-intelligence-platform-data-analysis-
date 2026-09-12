@@ -1,73 +1,183 @@
-﻿# E-commerce-customer-revenue-intelligence-platform-data-analysis-
-# Advanced E-Commerce Customer & Revenue Intelligence Platform
+# E-Commerce Customer & Revenue Intelligence Platform
 
-End-to-end analytics on the Brazilian E-Commerce Public Dataset by Olist — revenue drivers,
-product and category performance, customer value and churn risk, channel proxies, statistical
-testing, revenue forecasting, and an interactive BI dashboard, all translated into business
-recommendations.
+**End-to-end analytics on ~100,000 real orders from Olist, a Brazilian online marketplace:<br>
+data audit and cleaning, SQL, statistics, customer segmentation, cohorts, forecasting,<br>
+a Power BI dashboard and a FastAPI + Streamlit web app, all turned into business recommendations.**
 
-Focus: **data analysis, SQL, statistics and BI** — machine learning only where it earns its place.
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![pandas](https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQL-SQLite-003B57?logo=sqlite&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white)
+![statsmodels](https://img.shields.io/badge/statsmodels-4051B5)
+![Power BI](https://img.shields.io/badge/Power_BI-F2C811?logo=powerbi&logoColor=black)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-28_passing-2EA44F?logo=pytest&logoColor=white)
 
-<p>
-  <img src="docs/screenshots/powerbi_overview.png" alt="Power BI dashboard, Executive Overview page" width="49%">
-  <img src="docs/screenshots/web_overview.png" alt="Streamlit web app, Overview tab" width="49%">
-</p>
+[Screenshots](#screenshots) · [Key findings](#key-findings) · [Architecture](#architecture) ·
+[Quick start](#quick-start) · [Notebook guide](#notebook-guide) · [SQL guide](#sql-guide) ·
+[Web app](#web-app-fastapi--streamlit)
 
-*Left: the Power BI dashboard. Right: the FastAPI + Streamlit web app. More in [Screenshots](#screenshots).*
+</div>
 
----
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/powerbi_overview.png" alt="Power BI dashboard, Executive Overview page"></td>
+    <td width="50%"><img src="docs/screenshots/web_hero.png" alt="Streamlit web app on localhost, Overview tab"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Power BI dashboard</b> · 5 pages, 38 DAX measures</td>
+    <td align="center"><b>Web app on localhost:8501</b> · FastAPI + Streamlit, 7 tabs</td>
+  </tr>
+</table>
 
-## Dataset
+## Overview
 
-[Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-(Kaggle `olistbr/brazilian-ecommerce`) — 9 CSVs, ~100k orders placed between September 2016 and
-October 2018 on a Brazilian marketplace.
+The project answers the questions a marketplace's leadership would ask: where revenue comes
+from, which customers and products matter, whether customers come back, what drives bad reviews,
+and what next month looks like. Where the data cannot answer a question (there is no cost,
+marketing-channel or experiment data), the project says so rather than approximating.
 
-| Table | Rows | Grain |
-|---|---:|---|
-| `olist_orders_dataset` | 99,441 | one row per order |
-| `olist_order_items_dataset` | 112,650 | one row per item line within an order |
-| `olist_customers_dataset` | 99,441 | one row per order-scoped customer account |
-| `olist_products_dataset` | 32,951 | one row per product |
-| `olist_order_payments_dataset` | 103,886 | one row per payment instalment record |
-| `olist_order_reviews_dataset` | 99,224 | one row per review (key not unique — see audit) |
-| `olist_sellers_dataset` | 3,095 | one row per seller |
-| `olist_geolocation_dataset` | 1,000,163 | one row per geocoded observation |
-| `product_category_name_translation` | 71 | category name PT → EN |
+Focus: **data analysis, SQL, statistics and BI**, with machine learning only where it earns its place.
 
-Raw CSVs live in `data/raw/olist/` and are **git-ignored** — download them from Kaggle and unzip
-them there to reproduce.
+| Layer | What it contains | Where |
+|---|---|---|
+| Data audit & cleaning | a 16-issue register, "flag, don't delete" rules, 12/12 validation checks | notebooks 01–02, `src/data_cleaning.py` |
+| Analysis | EDA, customer value, RFM + K-Means, cohorts, Pareto, marketing proxies, 3 hypothesis tests, forecasting | notebooks 03–10 |
+| SQL | 28 analytical queries with CTEs and window functions | `sql/` |
+| Power BI | 5-page dashboard, 13 tables, 9 relationships, 38 DAX measures, generated from code | `dashboard/` |
+| Web app | FastAPI backend (22 endpoints) + Streamlit front end (7 tabs with Power BI-style filters) | `app/` |
+| Report | business recommendations, each traced to the analysis behind it | `reports/` |
 
-## Structural limitations of this data
+## Key findings
 
-Stated up front because they shape the scope of several phases. The analysis adapts to them and
-labels findings accordingly rather than approximating past them.
+1. **This is an acquisition business, not a retention business.** 97.0% of customers buy exactly
+   once, and **98.2% of every cohort's revenue arrives in its acquisition month**.
+2. **Revenue is driven by unit price, not basket size.** Average unit price explains **87%** of
+   order-value variance; basket size explains 2.4%. 90% of orders contain a single item.
+3. **Late delivery is the strongest relationship in the data** — a 1-star rate of **46.2% vs 6.6%**
+   (7.0×, χ² = 12,573, Cramér's V = 0.363) — but its retention value is negligible (~R$5,000/yr).
+4. **The apparent cohort collapse is censoring**, not deterioration: naive repeat rates correlate
+   **r = 0.92** with observation time; on an equal 3-month window 2017 and 2018 cohorts differ by
+   −0.001 pp.
+5. **Trend-extrapolating forecasts fail badly** (150–210% worse than naive). A 3-month moving
+   average wins at MAPE 7.13%. Plan flat, ~R$850k/month.
+6. **Growth was 100% volume-driven** — Jan–Aug 2018 vs 2017: revenue +141%, orders +140%,
+   **AOV +0.5%**.
 
-- **No cost or margin data.** Only `price` and `freight_value`. Profit analysis is impossible;
-  product "profitability" is scoped to revenue, price level and revenue concentration.
-- **No marketing channel data** — no campaigns, impressions, clicks, spend or attribution. The
-  marketing phase uses proxies (payment type, seller, region, category) and states that true
-  multi-channel attribution cannot be done here.
-- **No experiment or control flag.** The A/B phase uses a natural quasi-experiment and is
-  labelled **observational**, not a randomised experiment.
-- **No customer demographics** beyond geography (city / state / zip prefix).
-- **`customer_id` is order-scoped**; `customer_unique_id` identifies the person and is the key
-  used for RFM, repeat-purchase and cohort analysis.
+See [`reports/business_recommendations.md`](reports/business_recommendations.md) for the full set,
+each traced to the notebook that produced it.
 
-## Key decisions from the data audit
+## Screenshots
 
-Established in `notebooks/01_data_understanding.ipynb` and binding on every later phase:
+### Power BI dashboard
 
-1. **Identity** — `customer_unique_id` (96,096 people behind 99,441 `customer_id` values).
-2. **Revenue** — `order_items.price` summed over **delivered** orders only; `freight_value`
-   tracked separately. R$ 13.22M of R$ 13.59M gross.
-3. **Time window** — **Jan 2017 – Aug 2018 (20 months)**. The 2016 pilot period and the truncated
-   Sep/Oct 2018 tail are extract artefacts, not demand signals.
-4. **Join discipline** — deduplicate reviews to one per order, collapse `geolocation` to one row
-   per zip prefix, left-join categories with an `Unknown` bucket.
-5. **Truncation** — the export thins from 2018-08-22 and stops 2018-08-29 (found in Phase 12).
-   Time-series work trims these days; an earlier "12% decline into August" reading was an artefact
-   and was corrected.
+`dashboard/OlistIntelligence.pbip` — five pages with a shared page navigator and slicers on every
+page. Design and verification notes are in [`dashboard/README.md`](dashboard/README.md).
+
+<table>
+  <tr>
+    <td width="50%"><b>Executive Overview</b><br><img src="docs/screenshots/powerbi_overview.png" alt="Power BI Executive Overview page"></td>
+    <td width="50%"><b>Customer Intelligence</b><br><img src="docs/screenshots/powerbi_customers.png" alt="Power BI Customer Intelligence page"></td>
+  </tr>
+  <tr>
+    <td><b>Product Intelligence</b><br><img src="docs/screenshots/powerbi_products.png" alt="Power BI Product Intelligence page"></td>
+    <td><b>Marketing Proxies</b><br><img src="docs/screenshots/powerbi_marketing.png" alt="Power BI Marketing Proxies page"></td>
+  </tr>
+  <tr>
+    <td><b>Revenue Forecast</b><br><img src="docs/screenshots/powerbi_forecast.png" alt="Power BI Revenue Forecast page"></td>
+    <td></td>
+  </tr>
+</table>
+
+### Web app — running locally at `http://localhost:8501`
+
+Seven tabs, each with its own filter bar, like the pages of the Power BI dashboard. The API behind
+it is documented at `http://127.0.0.1:8000/docs`.
+
+<table>
+  <tr>
+    <td width="50%"><b>Overview, no filters</b><br><img src="docs/screenshots/web_overview.png" alt="Web app Overview tab"></td>
+    <td width="50%"><b>Overview filtered to 2018, São Paulo + Rio de Janeiro</b><br><img src="docs/screenshots/web_filtered.png" alt="Web app Overview tab with filters applied"></td>
+  </tr>
+  <tr>
+    <td><b>Customers</b><br><img src="docs/screenshots/web_customers.png" alt="Web app Customers tab"></td>
+    <td><b>Products</b><br><img src="docs/screenshots/web_products.png" alt="Web app Products tab"></td>
+  </tr>
+  <tr>
+    <td><b>Marketing</b><br><img src="docs/screenshots/web_marketing.png" alt="Web app Marketing tab"></td>
+    <td><b>Experiments</b><br><img src="docs/screenshots/web_experiments.png" alt="Web app Experiments tab"></td>
+  </tr>
+  <tr>
+    <td><b>Forecast</b><br><img src="docs/screenshots/web_forecast.png" alt="Web app Forecast tab"></td>
+    <td></td>
+  </tr>
+</table>
+
+## Architecture
+
+```mermaid
+flowchart LR
+    RAW["9 raw CSVs<br/>(Kaggle)"] --> CLEAN["src/data_cleaning.py<br/>10 cleaned tables"]
+    CLEAN --> NB["Notebooks 01–10<br/>EDA · RFM · K-Means · cohorts<br/>products · marketing · tests · forecast"]
+    CLEAN --> SQL[("SQLite<br/>28 SQL queries")]
+    NB --> EXPORT["src/export_powerbi.py<br/>13 dashboard tables"]
+    NB --> REPORT["Business<br/>recommendations"]
+    EXPORT --> PBI["Power BI project<br/>5 pages · 38 measures"]
+    EXPORT --> API["FastAPI<br/>22 endpoints"]
+    API --> WEB["Streamlit web app<br/>7 tabs with filters"]
+```
+
+Every number shown in the dashboard and the web app comes from the same cleaned tables and the
+same analysis base (delivered orders, January 2017 – August 2018), so they agree with the
+notebooks to the cent. The API's test suite checks this.
+
+## Quick start
+
+**Requirements:** Python (tested on 3.14), and Power BI Desktop (Windows) for the dashboard.
+
+```bash
+git clone <repository-url>
+cd ecommerce-analytics
+python -m venv venv
+venv\Scripts\activate              # Windows; on macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Get the data.** Download the [Olist dataset from Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+and unzip the 9 CSVs into `data/raw/olist/`. The `data/` folder is git-ignored, so a fresh clone
+has no data until the pipeline below has run.
+
+**Build everything:**
+
+```bash
+python src/data_cleaning.py          # raw CSVs -> data/processed/ (10 cleaned tables)
+
+# notebooks 01 -> 10, in order; 04-10 also write the analysis tables the steps below need
+for nb in notebooks/*.ipynb; do jupyter nbconvert --to notebook --execute --inplace "$nb"; done
+
+python sql/build_db.py --report      # processed -> SQLite + reports/sql_query_results.md
+python src/export_powerbi.py         # processed -> data/powerbi/ (13 tables)
+python src/build_pbip.py --validate  # -> dashboard/OlistIntelligence.pbip, schema-checked
+python -m pytest tests/              # the API reproduces the notebook numbers
+```
+
+The notebooks must run before the Power BI export: segments, cohorts, product and marketing
+tables and the forecast are produced by notebooks 04–10, and `export_powerbi.py` stops with a
+message naming the missing notebooks if they have not run. Opening the notebooks in Jupyter and
+running 01 → 10 works just as well as the loop above. Run them from `notebooks/`, because they
+find the data through the relative path `../data/raw/olist`.
+
+**Run the web app:**
+
+```bash
+python run_app.py                    # API on :8000, web app on http://localhost:8501
+```
+
+**Open the dashboard:** double-click `dashboard/OlistIntelligence.pbip` and click **Refresh now**
+on the yellow banner; the first load of the 13 tables takes about a minute. Running
+`src/build_pbip.py` points the dashboard at your own `data/powerbi/` folder. The details are in
+[`dashboard/README.md`](dashboard/README.md).
 
 ## Project structure
 
@@ -97,7 +207,7 @@ ecommerce-analytics/
 ├── run_app.py              # starts the API and the web app together
 ├── .streamlit/config.toml  # dark theme matching the Power BI dashboard
 ├── reports/                # recommendations, SQL results, Power BI data dictionary
-├── docs/screenshots/       # Power BI and web app screenshots used in this README
+├── docs/screenshots/       # Power BI and localhost web app screenshots used in this README
 ├── src/                    # reusable pipeline code
 │   ├── data_cleaning.py    # cleaning rules + fact-table builders
 │   ├── feature_engineering.py
@@ -108,6 +218,55 @@ ecommerce-analytics/
 ├── requirements.txt
 └── README.md
 ```
+
+## Dataset
+
+[Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+(Kaggle `olistbr/brazilian-ecommerce`) — 9 CSVs, ~100k orders placed between September 2016 and
+October 2018 on a Brazilian marketplace.
+
+| Table | Rows | Grain |
+|---|---:|---|
+| `olist_orders_dataset` | 99,441 | one row per order |
+| `olist_order_items_dataset` | 112,650 | one row per item line within an order |
+| `olist_customers_dataset` | 99,441 | one row per order-scoped customer account |
+| `olist_products_dataset` | 32,951 | one row per product |
+| `olist_order_payments_dataset` | 103,886 | one row per payment instalment record |
+| `olist_order_reviews_dataset` | 99,224 | one row per review (key not unique — see audit) |
+| `olist_sellers_dataset` | 3,095 | one row per seller |
+| `olist_geolocation_dataset` | 1,000,163 | one row per geocoded observation |
+| `product_category_name_translation` | 71 | category name PT → EN |
+
+### Structural limitations of this data
+
+Stated up front because they shape the scope of several phases. The analysis adapts to them and
+labels findings accordingly rather than approximating past them.
+
+- **No cost or margin data.** Only `price` and `freight_value`. Profit analysis is impossible;
+  product "profitability" is scoped to revenue, price level and revenue concentration.
+- **No marketing channel data** — no campaigns, impressions, clicks, spend or attribution. The
+  marketing phase uses proxies (payment type, seller, region, category) and states that true
+  multi-channel attribution cannot be done here.
+- **No experiment or control flag.** The A/B phase uses a natural quasi-experiment and is
+  labelled **observational**, not a randomised experiment.
+- **No customer demographics** beyond geography (city / state / zip prefix).
+- **`customer_id` is order-scoped**; `customer_unique_id` identifies the person and is the key
+  used for RFM, repeat-purchase and cohort analysis.
+
+### Key decisions from the data audit
+
+Established in `notebooks/01_data_understanding.ipynb` and binding on every later phase:
+
+1. **Identity** — `customer_unique_id` (96,096 people behind 99,441 `customer_id` values).
+2. **Revenue** — `order_items.price` summed over **delivered** orders only; `freight_value`
+   tracked separately. R$ 13.22M of R$ 13.59M gross.
+3. **Time window** — **Jan 2017 – Aug 2018 (20 months)**. The 2016 pilot period and the truncated
+   Sep/Oct 2018 tail are extract artefacts, not demand signals.
+4. **Join discipline** — deduplicate reviews to one per order, collapse `geolocation` to one row
+   per zip prefix, left-join categories with an `Unknown` bucket.
+5. **Truncation** — the export thins from 2018-08-22 and stops 2018-08-29 (found in Phase 12).
+   Time-series work trims these days; an earlier "12% decline into August" reading was an artefact
+   and was corrected.
 
 ## Phases
 
@@ -129,24 +288,17 @@ ecommerce-analytics/
 | 14 | Recommendations report | `reports/business_recommendations.md` | Done |
 | 15 | Web app (FastAPI + Streamlit) | `app/`, `run_app.py`, `tests/test_api.py` | Done |
 
-## Setup
-
-```bash
-python -m venv venv
-venv\Scripts\activate          # Windows
-pip install -r requirements.txt
-
-# place the 9 Kaggle CSVs in data/raw/olist/, then:
-jupyter notebook notebooks/01_data_understanding.ipynb
-```
-
-Notebooks resolve data with a relative path (`../data/raw/olist`), so run them from `notebooks/`.
-
 ## Tech stack
 
-Python (pandas, NumPy) · Matplotlib · **SQLite** (CTEs, window functions — see note) ·
-SciPy & statsmodels (hypothesis testing, confidence intervals, effect size, ARIMA/SARIMA,
-Holt-Winters) · scikit-learn (K-Means) · Power BI · FastAPI + Streamlit (web app) · pytest
+| Area | Tools |
+|---|---|
+| Data & analysis | Python, pandas, NumPy, Matplotlib, PyArrow |
+| SQL | SQLite 3.50 — CTEs, window functions (see the note below) |
+| Statistics | SciPy (Welch t, Mann-Whitney, chi-square, z-tests, effect sizes), statsmodels (ADF/KPSS, ARIMA, Holt-Winters) |
+| Machine learning | scikit-learn (K-Means, silhouette, ARI/NMI) |
+| BI | Power BI Desktop — PBIP/PBIR project, TMSL model, DAX measures |
+| Web | FastAPI, Uvicorn, Streamlit, Altair |
+| Quality | pytest, JSON-schema validation of the generated Power BI project |
 
 **On the database:** PostgreSQL is not installed on the development machine, so the analytical
 layer runs on **SQLite 3.50**, which supports every construct the project needs — CTEs, window
@@ -158,65 +310,18 @@ on PostgreSQL. [`sql/build_db.py`](sql/build_db.py) loads the cleaned tables int
 Each query in the `.sql` files starts with a `-- name:` line, which the runner uses to split and
 label them.
 
-
-## Headline findings
-
-1. **This is an acquisition business, not a retention business.** 97.0% of customers buy exactly
-   once, and **98.2% of every cohort's revenue arrives in its acquisition month**.
-2. **Revenue is driven by unit price, not basket size.** Average unit price explains **87%** of
-   order-value variance; basket size explains 2.4%. 90% of orders contain a single item.
-3. **Late delivery is the strongest relationship in the data** — a 1-star rate of **46.2% vs 6.6%**
-   (7.0×, χ² = 12,573, Cramér's V = 0.363) — but its retention value is negligible (~R$5,000/yr).
-4. **The apparent cohort collapse is censoring**, not deterioration: naive repeat rates correlate
-   **r = 0.92** with observation time; on an equal 3-month window 2017 and 2018 cohorts differ by
-   −0.001 pp.
-5. **Trend-extrapolating forecasts fail badly** (150–210% worse than naive). A 3-month moving
-   average wins at MAPE 7.13%. Plan flat, ~R$850k/month.
-6. **Growth was 100% volume-driven** — Jan–Aug 2018 vs 2017: revenue +141%, orders +140%,
-   **AOV +0.5%**.
-
-See [`reports/business_recommendations.md`](reports/business_recommendations.md) for the full set,
-each traced to the notebook that produced it.
-
-## Screenshots
-
-### Power BI dashboard — `dashboard/OlistIntelligence.pbip`
-
-Five pages with a shared page navigator and slicers on every page. Design and verification notes
-are in [`dashboard/README.md`](dashboard/README.md).
-
-| Executive Overview | Customer Intelligence |
-|---|---|
-| ![Power BI Executive Overview page](docs/screenshots/powerbi_overview.png) | ![Power BI Customer Intelligence page](docs/screenshots/powerbi_customers.png) |
-| **Product Intelligence** | **Marketing Proxies** |
-| ![Power BI Product Intelligence page](docs/screenshots/powerbi_products.png) | ![Power BI Marketing Proxies page](docs/screenshots/powerbi_marketing.png) |
-| **Revenue Forecast** | |
-| ![Power BI Revenue Forecast page](docs/screenshots/powerbi_forecast.png) | |
-
-### Web app — FastAPI + Streamlit
-
-Seven tabs, each with its own filter bar (see [Web app](#web-app-fastapi--streamlit)).
-
-| Overview, no filters | Overview filtered to 2018, São Paulo + Rio de Janeiro |
-|---|---|
-| ![Web app Overview tab](docs/screenshots/web_overview.png) | ![Web app Overview tab with filters applied](docs/screenshots/web_filtered.png) |
-| **Customers** | **Products** |
-| ![Web app Customers tab](docs/screenshots/web_customers.png) | ![Web app Products tab](docs/screenshots/web_products.png) |
-| **Marketing** | **Experiments** |
-| ![Web app Marketing tab](docs/screenshots/web_marketing.png) | ![Web app Experiments tab](docs/screenshots/web_experiments.png) |
-| **Forecast** | |
-| ![Web app Forecast tab](docs/screenshots/web_forecast.png) | |
-
 ## Notebook guide
 
 The notebooks contain code and outputs only. This section explains what each one does, the
 method choices behind it, and what it found. Section numbers (§) match the order of the code
 cells in each notebook and are the numbers cited in `reports/business_recommendations.md`.
+Click a notebook to expand it.
 
 Analysis base for notebooks 03–10: **delivered orders, 2017-01-01 to 2018-08-31** — 96,211 orders,
 R$13,181,027 revenue, 93,104 customers.
 
-### 01 — Data understanding (Phase 2)
+<details>
+<summary><b>01 — Data understanding (Phase 2)</b></summary>
 
 A read-only audit of the 9 raw CSVs; nothing is modified.
 
@@ -236,7 +341,10 @@ cardinality · §7 date coverage · §8 referential integrity · §9 value sanit
   or zero prices.
 - 16 issues logged in the §14 register with a severity and a Phase 3 decision for each.
 
-### 02 — Data cleaning (Phase 3)
+</details>
+
+<details>
+<summary><b>02 — Data cleaning (Phase 3)</b></summary>
 
 Implements the §14 register. Logic lives in `src/data_cleaning.py`; the notebook runs and checks it.
 
@@ -260,7 +368,10 @@ reviews, the geolocation fan-out, out-of-Brazil coordinates); nothing is mean/me
   Kept; backlog clearance and data backfill cannot be told apart from this data.
 - **Validation (§10):** 12/12 checks pass; revenue preserved to the cent at both grains.
 
-### 03 — Exploratory data analysis (Phase 4)
+</details>
+
+<details>
+<summary><b>03 — Exploratory data analysis (Phase 4)</b></summary>
 
 **Sections:** §1 univariate (1.1 order value, 1.2 customer spend, 1.3 basket size) · §2 bivariate
 (2.1 basket vs value, 2.2 spend vs frequency, 2.3 category, 2.4 region, 2.5 delivery vs satisfaction)
@@ -278,7 +389,10 @@ reviews, the geolocation fan-out, out-of-Brazil coordinates); nothing is mean/me
 - Black Friday (24 Nov 2017): 7.8× a median day, at a below-average AOV.
 - **Correction:** the apparent August 2018 decline is a truncation artefact (see notebook 10 §1).
 
-### 04 — Customer analytics (Phase 6)
+</details>
+
+<details>
+<summary><b>04 — Customer analytics (Phase 6)</b></summary>
 
 **Sections:** §1 customer table · §2 value distribution · §3 frequency and repeat behaviour · §4 churn
 risk (4.1 definition, 4.2 lapse threshold) · §5 experience vs return · §6 geography · §7 save · §8
@@ -296,7 +410,10 @@ the 90th percentile of observed repurchase gaps.
   returns only ~3.3% of the time: the low repeat rate is structural.
 - Caveat: recency is confounded with opportunity at a fixed window close.
 
-### 05 — RFM and K-Means segmentation (Phases 6–7)
+</details>
+
+<details>
+<summary><b>05 — RFM and K-Means segmentation (Phases 6–7)</b></summary>
 
 **Sections:** §1 RFM scoring (1.1 inputs, 1.2 R and M quintiles, 1.3 frequency, 1.4 consequence) · §2
 segment rules · §3 K-Means (3.1 features, 3.2 choosing k, 3.3 profiles) · §4 RFM vs K-Means · §5 save
@@ -330,7 +447,10 @@ interpretability**, not because the data demands it.
   "Needs Attention" splits ~50/50, a weakness of recency-only rules.
 - Segments are descriptive, not predictive.
 
-### 06 — Cohort and retention (Phase 8)
+</details>
+
+<details>
+<summary><b>06 — Cohort and retention (Phase 8)</b></summary>
 
 **Sections:** §1 cohort sizes · §2 retention matrix · §3 decay · §4 censoring check · §5 revenue
 retention · §6 save · §7 findings
@@ -343,7 +463,10 @@ retention · §6 save · §7 findings
   at 0.976% — no decline.
 - Revenue per customer is stable across cohorts (R$131–R$160) while cohort size grew 8×.
 
-### 07 — Product analytics (Phase 9)
+</details>
+
+<details>
+<summary><b>07 — Product analytics (Phase 9)</b></summary>
 
 **Scope:** no cost data exists, so no margin analysis. The margin-vs-volume quadrant is replaced by
 a price-vs-volume quadrant, and "worst performer" means "sells little", never "loses money".
@@ -359,7 +482,10 @@ category momentum · §6 freight share · §7 save · §8 findings
   be separated from trend with one year of data.
 - Freight is 16.6% of revenue and falls hardest on cheap, bulky goods (r = −0.75 with price).
 
-### 08 — Marketing analysis (Phase 10)
+</details>
+
+<details>
+<summary><b>08 — Marketing analysis (Phase 10)</b></summary>
 
 > **This is NOT multi-channel marketing attribution.** The dataset has no campaign, channel, spend,
 > impression, click or session data, so CAC, ROAS, channel mix and conversion rate cannot be
@@ -379,7 +505,10 @@ category momentum · §6 freight share · §7 save · §8 findings
 **Data needed for real attribution (§6):** a session log with channel/source/campaign, a
 visitor-to-customer mapping, a campaign spend table, and randomised holdouts.
 
-### 09 — Quasi-experiment and statistical testing (Phase 11)
+</details>
+
+<details>
+<summary><b>09 — Quasi-experiment and statistical testing (Phase 11)</b></summary>
 
 > **These comparisons are observational, not randomised.** There is no treatment flag or control
 > group. Group membership is chosen by the customer or by circumstance, so a significant difference
@@ -401,7 +530,10 @@ significance · §6 findings and limitations. Significance level α = 0.05 for e
 - Limitations: unobserved confounders (income, credit access, preference); lateness is not random,
   so 7× is an upper bound; three tests at α = 0.05 (all survive Bonferroni).
 
-### 10 — Revenue forecasting (Phase 12)
+</details>
+
+<details>
+<summary><b>10 — Revenue forecasting (Phase 12)</b></summary>
 
 **Sections:** §1 truncated tail · §2 diagnostics · §3 monthly models · §4 daily models · §5 forecast
 with intervals · §6 save · §7 findings and limitations. Code lives in `src/forecasting.py`.
@@ -423,6 +555,8 @@ with intervals · §6 save · §7 findings and limitations. Code lives in `src/f
 - ARIMA(0,1,1) forecast ≈ R$846k/month; 95% interval ±29% in month 1, ±44% by month 3.
 - Limitations: 20 monthly observations, 4 test months, no Black Friday, no external regressors, and
   a forecast base month (Aug 2018) that is understated.
+
+</details>
 
 ## SQL guide
 
@@ -527,46 +661,27 @@ example, instalments exist only for credit-card orders). It uses the same dark n
 colour-blind-safe palette as the Power BI dashboard. API responses are cached for 10 minutes. If
 the API is down, the page says so and shows the command to start it.
 
-### Verification
+## Testing and reproducibility
 
-- `python -m pytest tests/test_api.py` runs 28 tests asserting the API reproduces the notebooks
+- **API tests:** `python -m pytest tests/` runs 28 tests asserting the API reproduces the notebooks
   exactly: revenue R$13,181,027.13, the filtered totals (2018, São Paulo, boleto), multi-value
   filters (São Paulo + Rio = the sum of the two), the November 2017 date range (R$987,765.37,
   7,289 orders), segment shares, the live retention curve and cohorts (17 comparable cohorts,
   mean 3-month repeat rate 1.04%), the product Pareto (8,310 products for 80% of revenue), the
-  state and seller scorecards, all three test statistics and the forecast. It also checks that
+  state and seller scorecards, all three test statistics and the forecast. They also check that
   invalid filters are rejected.
-- Streamlit's `AppTest` ran the page against the live API: it set filters on every tab, pressed
-  each tab's Clear button and the sidebar's Clear all filters, and checked the KPIs after each
-  step, with no exceptions.
-- All seven tabs were rendered in a headless browser and checked in screenshots.
-
-## Reproducing
-
-```bash
-pip install -r requirements.txt
-
-python src/data_cleaning.py          # raw CSVs -> data/processed/ (10 cleaned tables)
-
-# notebooks 01 -> 10, in order; 04-10 also write the analysis tables the steps below need
-for nb in notebooks/*.ipynb; do jupyter nbconvert --to notebook --execute --inplace "$nb"; done
-
-python sql/build_db.py --report      # processed -> SQLite + reports/sql_query_results.md
-python src/export_powerbi.py         # processed -> data/powerbi/ (13 tables)
-python src/build_pbip.py --validate  # -> dashboard/OlistIntelligence.pbip, schema-checked
-python -m pytest tests/              # API reproduces the notebook numbers
-python run_app.py                    # web app on http://localhost:8501
-```
-
-The notebooks must run before the Power BI export: segments, cohorts, product and marketing
-tables and the forecast are produced by notebooks 04–10, and `export_powerbi.py` stops with a
-message naming the missing notebooks if they have not run. Opening the notebooks in Jupyter and
-running 01 → 10 works just as well as the loop above.
-
-This sequence was run end to end from the raw CSVs in a fresh copy of the project: all 21
-processed tables and all 13 Power BI exports came out identical to the project's, every
-notebook printed the same results, the generated Power BI report was identical (the model
-differs only in the `DataFolder` path), and all 28 tests passed.
+- **Web app:** Streamlit's `AppTest` ran the page against the live API: it set filters on every
+  tab, pressed each tab's Clear button and the sidebar's Clear all filters, and checked the KPIs
+  after each step, with no exceptions. All seven tabs were rendered in a headless browser and
+  checked in screenshots.
+- **Power BI:** `src/build_pbip.py --validate` checks the 77 generated report and theme files
+  against Microsoft's published JSON schemas, and every DAX measure and slicer was checked against
+  the notebook figures on the live model in Power BI Desktop (see
+  [`dashboard/README.md`](dashboard/README.md)).
+- **End to end:** the Quick start sequence was run from the raw CSVs in a fresh copy of the
+  project. All 21 processed tables and all 13 Power BI exports came out identical to the
+  project's, every notebook printed the same results, the generated Power BI report was identical
+  (the model differs only in the `DataFolder` path), and all 28 tests passed.
 
 ## Scope boundaries
 
@@ -575,3 +690,14 @@ Stated in this README rather than worked around: **no cost data** (so no margin 
 (so Phase 11 is observational, never causal), **no demographics** beyond geography, and **one year
 of usable history** (so seasonality cannot be separated from trend, and the forecast has no annual
 component).
+
+## Data source
+
+Brazilian E-Commerce Public Dataset by Olist, published on
+[Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) under the CC BY-NC-SA 4.0
+licence. The data is not included in this repository.
+
+## Author
+
+**Omkar Armugam**
+
